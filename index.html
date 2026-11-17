@@ -737,7 +737,7 @@
           <li><a class="nav__link" href="#reviews"><i class="fa-solid fa-comments" aria-hidden="true"></i>Відгуки</a></li>
           <li><a class="nav__link" href="#location"><i class="fa-solid fa-map-pin" aria-hidden="true"></i>Локація</a></li>
           <li><a class="nav__link" href="#tariffs"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i>Тарифи</a></li>
-          <li><a class="nav__link" href="#contacts"><i class="fa-solid fa-headset" aria-hidden="true"></i>Контакти</a></li>
+          <li><a class="nav__link" href="#feedback"><i class="fa-solid fa-headset" aria-hidden="true"></i>Зв'язок</a></li>
         </ul>
         <div class="site-header__actions nav-mobile-actions">
           <a class="btn btn--outline" href="/login"><i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>Увійти</a>
@@ -1575,7 +1575,194 @@
       </div>
     </aside>
 
+    <!-- СЕКЦІЯ АДАПТИВНОЇ ФОРМИ ЗВОРОТНОГО ЗВ'ЯЗКУ (ЛР №9) -->
+    <section id="feedback" class="py-12 bg-slate-50 border-t border-slate-200" aria-labelledby="feedback-title">
+      <div class="container">
+        <div class="max-w-3xl mx-auto">
+          <div class="text-center mb-8">
+            <span class="inline-block px-3 py-1.5 mb-3 text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-100 rounded-full">
+              Підтримка водіїв та партнерів
+            </span>
+            <h2 id="feedback-title" class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+              Зворотний зв’язок ChargeUA
+            </h2>
+            <p class="text-sm sm:text-base text-slate-600">
+              Маєте питання щодо зарядки, тарифів або підключення нової станції? Заповніть форму — перевірка спрацює миттєво.
+            </p>
+          </div>
+
+          <form id="feedbackForm" novalidate class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <!-- Ім'я -->
+              <div>
+                <label for="username" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Ім’я <span class="text-red-600" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  autocomplete="name"
+                  required
+                  minlength="2"
+                  aria-required="true"
+                  aria-describedby="nameError"
+                  aria-invalid="false"
+                  placeholder="Наприклад: Андрій"
+                  class="w-full min-h-[44px] px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-gray-300 rounded-xl transition-colors placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                >
+                <p id="nameError" class="hidden mt-1.5 text-xs font-medium text-red-600" role="alert"></p>
+              </div>
+
+              <!-- Емейл -->
+              <div>
+                <label for="email" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Електронна пошта <span class="text-red-600" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  autocomplete="email"
+                  required
+                  aria-required="true"
+                  aria-describedby="emailError"
+                  aria-invalid="false"
+                  placeholder="name@gmail.com"
+                  class="w-full min-h-[44px] px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-gray-300 rounded-xl transition-colors placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                >
+                <p id="emailError" class="hidden mt-1.5 text-xs font-medium text-red-600" role="alert"></p>
+              </div>
+
+              <!-- Телефон -->
+              <div>
+                <label for="phone" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Номер телефону <span class="text-red-600" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  autocomplete="tel"
+                  inputmode="tel"
+                  required
+                  aria-required="true"
+                  aria-describedby="phoneHint phoneError"
+                  aria-invalid="false"
+                  placeholder="+380501234567"
+                  class="w-full min-h-[44px] px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-gray-300 rounded-xl transition-colors placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                >
+                <p id="phoneHint" class="mt-1 text-xs text-slate-500">
+                  Формат: +380XXXXXXXXX (можна ввести з 0)
+                </p>
+                <p id="phoneError" class="hidden mt-1 text-xs font-medium text-red-600" role="alert"></p>
+              </div>
+
+              <!-- Тема звернення -->
+              <div>
+                <label for="topic" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Тема звернення
+                </label>
+                <select
+                  id="topic"
+                  name="topic"
+                  class="w-full min-h-[44px] px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-gray-300 rounded-xl transition-colors focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                >
+                  <option value="support">Технічна підтримка на станції</option>
+                  <option value="tariffs">Тарифи та абонемент Green Night</option>
+                  <option value="partner">Встановлення хабу для бізнесу</option>
+                  <option value="other">Інше питання</option>
+                </select>
+              </div>
+
+              <!-- Повідомлення -->
+              <div class="md:col-span-2">
+                <label for="message" class="block text-sm font-semibold text-slate-800 mb-1.5">
+                  Повідомлення <span class="text-red-600" aria-hidden="true">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  required
+                  minlength="10"
+                  aria-required="true"
+                  aria-describedby="messageError"
+                  aria-invalid="false"
+                  placeholder="Опишіть запитання або вкажіть адресу станції (мінімум 10 символів)..."
+                  class="w-full min-h-[112px] px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-gray-300 rounded-xl transition-colors resize-y placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                ></textarea>
+                <p id="messageError" class="hidden mt-1.5 text-xs font-medium text-red-600" role="alert"></p>
+              </div>
+
+              <!-- Згода з політикою конфіденційності -->
+              <div class="md:col-span-2">
+                <div class="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="agreement"
+                    name="agreement"
+                    required
+                    aria-required="true"
+                    aria-describedby="agreementError"
+                    aria-invalid="false"
+                    class="h-5 w-5 mt-0.5 rounded border-gray-300 accent-blue-600 cursor-pointer flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                  >
+                  <label for="agreement" class="text-sm text-slate-700 cursor-pointer select-none">
+                    Погоджуюсь із <a href="/privacy" class="text-blue-600 font-medium underline">політикою конфіденційності</a> та обробкою контактних даних
+                  </label>
+                </div>
+                <p id="agreementError" class="hidden mt-1.5 text-xs font-medium text-red-600" role="alert"></p>
+              </div>
+
+              <!-- Кнопка надсилання -->
+              <div class="md:col-span-2 mt-2">
+                <button
+                  type="submit"
+                  id="submitFeedbackBtn"
+                  class="w-full sm:w-fit min-h-[44px] px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+                >
+                  Надіслати повідомлення
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
   </main>
+
+  <!-- ДОСТУПНЕ МОДАЛЬНЕ ВІКНО УСПІШНОГО НАДСИЛАННЯ -->
+  <div
+    id="successModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalTitle"
+    aria-describedby="modalDesc"
+    class="fixed inset-0 z-[9999] hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4"
+  >
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 text-center">
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600" aria-hidden="true">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="28" height="28">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <h3 id="modalTitle" class="text-xl font-bold text-slate-900 mb-2">
+        Запит перевірено
+      </h3>
+      <p id="modalDesc" class="text-sm text-slate-600 mb-6 leading-relaxed">
+        Форма успішно пройшла клієнтську валідацію. Демонстрація успішного надсилання.
+      </p>
+      <button
+        type="button"
+        id="closeModalBtn"
+        class="w-full min-h-[44px] px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+      >
+        Закрити
+      </button>
+    </div>
+  </div>
 
 <footer class="site-footer" id="contacts">
     <div class="container">
@@ -1631,5 +1818,7 @@
   <script src="js/calculator.js" defer></script>
   <!-- Модуль відеослайдера корисних матеріалів (YouTube Carousel) -->
   <script src="js/materials-slider.js?v=2" defer></script>
+  <!-- Модуль валідації форми зворотного зв'язку -->
+  <script src="js/validation.js" defer></script>
 </body>
 </html>
