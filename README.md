@@ -20,6 +20,7 @@
 
 ## Демо
 
+* **Vercel (Production):** [https://chargeua-landing.vercel.app/](https://chargeua-landing.vercel.app/)
 * **GitHub Pages:** [https://andriylemishka.github.io/chargeua-landing/](https://andriylemishka.github.io/chargeua-landing/)
 * **Netlify:** [https://gleaming-florentine-c9c88b.netlify.app/](https://gleaming-florentine-c9c88b.netlify.app/)
 
