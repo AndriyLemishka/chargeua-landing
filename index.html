@@ -24,6 +24,7 @@
     } catch(e) {}
   </script>
 <title>ChargeUA — мережа зарядних станцій електромобілів в Україні</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/Logo.svg">
   <meta name="description" content="ChargeUA — єдина мережа швидкісних зарядних станцій для електромобілів по всій Україні: DC 150 кВт, Ultra-fast, інтерактивний калькулятор витрат, Live-карта 480+ станцій та робота від генераторів у блекаути.">
   <meta name="theme-color" content="#005EC9">
 
@@ -311,6 +312,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
 
+  <!-- Стилі зовнішніх Vanilla JS медіабібліотек через CDN (ЛР №10: Swiper.js v11, Fancybox v5) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+
   <!-- Додаткові стилі для ЛР №7: відео у правому крилі Hero, Webflow-style центрований слайдер YouTube та білий віджет тарифів -->
   <style>
     /* Праве відео в Hero-секції (замість статичної картинки) */
@@ -503,21 +508,16 @@
     }
 
     /* =========================================================================
-       МОБІЛЬНА АДАПТАЦІЯ ПЕРЕВАГ ТА ВІДГУКІВ (СІТКА ПО 2 КАРТКИ В РЯД / COL-6)
-       Вимога: зробити картки значно меншими, компактними, сітка 2 колонки
+       МОБІЛЬНА АДАПТАЦІЯ ПЕРЕВАГ (СІТКА ПО 2 КАРТКИ В РЯД / COL-6)
        ========================================================================= */
     @media (max-width: 768px) {
-      /* Сітка переваг та відгуків у 2 колонки на мобільному */
-      #benefits .grid,
-      #reviews .grid {
+      #benefits .grid {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 10px !important;
       }
 
-      /* Компактний розмір та внутрішні відступи карток */
-      #benefits .card,
-      #reviews .card {
+      #benefits .card {
         padding: 12px 10px !important;
         border-radius: 14px !important;
         display: flex !important;
@@ -527,7 +527,6 @@
         box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
       }
 
-      /* Компактні кружечки іконок для переваг */
       #benefits .icon-circle {
         width: 36px !important;
         height: 36px !important;
@@ -537,7 +536,6 @@
         margin-bottom: 8px !important;
       }
 
-      /* Заголовки карток переваг */
       #benefits .card__title {
         font-size: 13px !important;
         font-weight: 700 !important;
@@ -546,41 +544,10 @@
         color: #0F172A !important;
       }
 
-      /* Описовий текст переваг */
       #benefits .card__text {
         font-size: 11px !important;
         line-height: 1.35 !important;
         color: #64748B !important;
-      }
-
-      /* Зірочки рейтингу у відгуках */
-      #reviews .review__rating {
-        font-size: 11px !important;
-        margin-bottom: 6px !important;
-        color: #F59E0B !important;
-        letter-spacing: 1px !important;
-      }
-
-      /* Текст відгуків */
-      #reviews .review__text {
-        font-size: 11px !important;
-        line-height: 1.35 !important;
-        color: #334155 !important;
-        margin-bottom: 8px !important;
-        font-style: normal !important;
-      }
-
-      /* Автор відгуку */
-      #reviews .review__author {
-        font-size: 10.5px !important;
-        font-weight: 600 !important;
-        color: #005EC9 !important;
-        margin-top: auto !important;
-      }
-
-      /* 3-й відгук розтягується на 2 колонки (span 2), створюючи гармонійне завершення */
-      #reviews .grid > .card:nth-child(3) {
-        grid-column: 1 / -1 !important;
       }
     }
 
@@ -608,7 +575,7 @@
       align-items: center !important;
       justify-content: space-between !important;
       flex-wrap: nowrap !important;
-      gap: 16px !important;
+      gap: 10px !important;
       padding-inline: 20px !important;
       height: 100% !important;
     }
@@ -620,14 +587,14 @@
         display: none !important;
       }
       .site-header .nav__list {
-        gap: 2px 6px !important;
+        gap: 0 2px !important;
         display: flex !important;
         flex-wrap: nowrap !important;
         align-items: center !important;
       }
       .site-header .nav__link {
-        padding: 6px 8px !important;
-        font-size: 13.5px !important;
+        padding: 6px 5px !important;
+        font-size: 12px !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
         color: #1E293B !important;
@@ -638,13 +605,22 @@
       .header-desktop-actions {
         display: flex !important;
         align-items: center !important;
-        gap: 8px !important;
+        gap: 6px !important;
         flex-shrink: 0 !important;
       }
       .header-desktop-actions .btn {
-        padding: 7px 14px !important;
-        font-size: 13.5px !important;
+        padding: 7px 12px !important;
+        font-size: 13px !important;
         white-space: nowrap !important;
+      }
+    }
+    @media (min-width: 1280px) {
+      .site-header .nav__list {
+        gap: 0 4px !important;
+      }
+      .site-header .nav__link {
+        padding: 6px 6.5px !important;
+        font-size: 13px !important;
       }
     }
     .hero-sec {
@@ -705,6 +681,267 @@
     #tariffs table td {
       padding: 12px 14px !important;
     }
+
+    /* =========================================================================
+       ЛР №10: TYPED.JS HERO, FANCYBOX ГАЛЕРЕЯ (#gallery), SWIPER ВІДГУКИ (#reviews)
+       ========================================================================= */
+    .hero-typed-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 28px;
+      margin-bottom: 20px;
+      font-size: 14.5px;
+      line-height: 1.5;
+      color: #334155;
+      background: rgba(241, 245, 249, 0.85);
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 8px 14px;
+    }
+    .hero-typed-accent {
+      color: #005EC9;
+      font-weight: 700;
+    }
+    .typed-cursor {
+      color: #005EC9;
+      font-weight: 700;
+      margin-left: 1px;
+    }
+    @media (max-width: 768px) {
+      .hero-typed-line {
+        justify-content: center;
+        font-size: 12.5px;
+        min-height: 44px;
+        padding: 8px 10px;
+      }
+    }
+
+    /* Fancybox v5 Галерея хабів (#gallery) */
+    .fancybox__container {
+      z-index: 99999 !important;
+    }
+    #gallery {
+      background: #FFFFFF;
+      border-top: 1px solid #E2E8F0;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 640px) {
+      .gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .gallery-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+    .gallery-card {
+      display: flex;
+      flex-direction: column;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      overflow: hidden;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+    .gallery-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -8px rgba(15, 23, 42, 0.14);
+      border-color: #93C5FD;
+    }
+    .gallery-card__media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #0F172A;
+      cursor: zoom-in;
+    }
+    .gallery-card__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gallery-card:hover .gallery-card__media img {
+      transform: scale(1.04);
+    }
+    .gallery-card__zoom {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.72);
+      color: #FFFFFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .gallery-card:hover .gallery-card__zoom {
+      background: #005EC9;
+      transform: scale(1.06);
+    }
+    .gallery-card__body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .gallery-card__tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: #005EC9;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .gallery-card__title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.35;
+    }
+    .gallery-card__meta {
+      font-size: 12.5px;
+      color: #475569;
+    }
+
+    /* Swiper.js v11 Слайдер відгуків (#reviews) */
+    .reviews-swiper-wrap {
+      position: relative;
+      padding-bottom: 44px;
+    }
+    .reviews-swiper {
+      padding: 6px 2px 10px;
+    }
+    .reviews-swiper .swiper-slide {
+      height: auto;
+      display: flex;
+    }
+    .review-card {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .review-card:hover {
+      border-color: #BFDBFE;
+      box-shadow: 0 10px 24px -8px rgba(0, 94, 201, 0.14);
+    }
+    .review-card .review__rating {
+      color: #F59E0B;
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .review-card .review__text {
+      color: #334155;
+      font-size: 14.5px;
+      line-height: 1.6;
+      font-style: normal;
+    }
+    .review-card__footer {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #F1F5F9;
+    }
+    .review-card__avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #005EC9 0%, #00B4D8 100%);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .review-card__name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.25;
+    }
+    .review-card__car {
+      font-size: 12px;
+      color: #475569;
+    }
+    .reviews-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 14px;
+      gap: 12px;
+    }
+    .reviews-pagination {
+      position: static !important;
+      width: auto !important;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .reviews-pagination .swiper-pagination-bullet {
+      width: 10px;
+      height: 10px;
+      background: #CBD5E1;
+      opacity: 1;
+      transition: width 0.25s ease, background-color 0.25s ease;
+    }
+    .reviews-pagination .swiper-pagination-bullet-active {
+      width: 28px;
+      border-radius: 999px;
+      background: #005EC9;
+    }
+    .reviews-nav-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .reviews-nav-btn {
+      position: static !important;
+      margin: 0 !important;
+      width: 44px !important;
+      height: 44px !important;
+      border-radius: 12px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: #0F172A !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .reviews-nav-btn::after {
+      display: none !important;
+    }
+    .reviews-nav-btn:hover {
+      background: #005EC9;
+      border-color: #005EC9;
+      color: #FFFFFF !important;
+    }
   </style>
 
 </head>
@@ -730,10 +967,11 @@
         <ul class="nav__list">
           <li><a class="nav__link" href="#main"><i class="fa-solid fa-house" aria-hidden="true"></i>Головна</a></li>
           <li><a class="nav__link" href="#calculator"><i class="fa-solid fa-calculator" aria-hidden="true"></i>Калькулятор</a></li>
-          <li><a class="nav__link" href="#map"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>Карта станцій</a></li>
+          <li><a class="nav__link" href="#map"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>Карта</a></li>
           <li><a class="nav__link" href="#stations"><i class="fa-solid fa-charging-station" aria-hidden="true"></i>Станції</a></li>
           <li><a class="nav__link" href="#benefits"><i class="fa-solid fa-circle-check" aria-hidden="true"></i>Переваги</a></li>
           <li><a class="nav__link" href="#materials"><i class="fa-solid fa-circle-play" aria-hidden="true"></i>Матеріали</a></li>
+          <li><a class="nav__link" href="#gallery"><i class="fa-solid fa-images" aria-hidden="true"></i>Галерея</a></li>
           <li><a class="nav__link" href="#reviews"><i class="fa-solid fa-comments" aria-hidden="true"></i>Відгуки</a></li>
           <li><a class="nav__link" href="#location"><i class="fa-solid fa-map-pin" aria-hidden="true"></i>Локація</a></li>
           <li><a class="nav__link" href="#tariffs"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i>Тарифи</a></li>
@@ -776,6 +1014,13 @@
 
           <p class="hero-sub">
             Знаходьте найближчі станції, розраховуйте вартість за лічені секунди та подорожуйте без хвилювань навіть під час блекаутів.
+          </p>
+
+          <!-- Динамічний ефект друкування переваг (Typed.js через CDN) -->
+          <p class="hero-typed-line" aria-live="polite">
+            <i class="fa-solid fa-bolt text-blue-600" aria-hidden="true"></i>
+            <span>Зараз у мережі:</span>
+            <span id="typed-text" class="hero-typed-accent">зарядка 10→80% за 20 хвилин на хабах DC 160 кВт.</span>
           </p>
 
           <!-- ДВІ КНОПКИ CTA -->
@@ -1334,28 +1579,209 @@
       </div>
     </section>
 
+    <!-- =========================================================================
+         СЕКЦІЯ: ГАЛЕРЕЯ ЗАРЯДНИХ ХАБІВ (FANCYBOX V5 + CSS GRID, ЛР №10)
+         ========================================================================= -->
+    <section class="section" id="gallery" aria-labelledby="gallery-title">
+      <div class="container">
+        <h2 class="section__title" id="gallery-title"><i class="fa-solid fa-images" aria-hidden="true"></i>Галерея зарядних хабів ChargeUA</h2>
+        <p class="text-sm sm:text-base text-slate-600 mb-6">Натисніть на будь-яке фото, щоб відкрити повноекранний перегляд із масштабуванням та гортанням (Fancybox v5).</p>
+
+        <div class="gallery-grid">
+          <a href="assets/images/gallery_hub_kyiv.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Київ, ТРЦ «Respublika Park» — міський хаб швидкої зарядки DC 160 кВт">
+            <div class="gallery-card__media">
+              <img src="assets/images/gallery_hub_kyiv.jpg" alt="Міський хаб ChargeUA у Києві ввечері" loading="lazy" width="1280" height="714">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Київ • DC 160 кВт</span>
+              <h3 class="gallery-card__title">Флагманський міський хаб</h3>
+              <p class="gallery-card__meta">4 швидкісні порти CCS2, цілодобове освітлення та паркінг</p>
+            </div>
+          </a>
+
+          <a href="assets/images/gallery_highway_carpathians.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Траса Київ–Чоп, Карпати — швидкісний комплекс Ultra-Fast із навісом">
+            <div class="gallery-card__media">
+              <img src="assets/images/gallery_highway_carpathians.jpg" alt="Зарядний комплекс ChargeUA на трасі в Карпатах" loading="lazy" width="1280" height="714">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Карпати • Траса М-06</span>
+              <h3 class="gallery-card__title">Трасовий комплекс Ultra-Fast</h3>
+              <p class="gallery-card__meta">Зарядка на маршруті Львів–Ужгород із комфортною зоною відпочинку</p>
+            </div>
+          </a>
+
+          <a href="assets/images/gallery_blackout_backup.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Енергонезалежний хаб ChargeUA — промисловий дизель-генератор і BESS накопичувач">
+            <div class="gallery-card__media">
+              <img src="assets/images/gallery_blackout_backup.jpg" alt="Енергонезалежний зарядний хаб із резервним генератором і батарейним накопичувачем" loading="lazy" width="1280" height="714">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Автономність • 100%</span>
+              <h3 class="gallery-card__title">Резервне живлення у блекаут</h3>
+              <p class="gallery-card__meta">Безперервна робота станцій завдяки дизель-генератору та BESS</p>
+            </div>
+          </a>
+
+          <a href="assets/images/gallery_plug_charge_closeup.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Стандарт CCS2 Combo — підтримка миттєвої авторизації Plug &amp; Charge">
+            <div class="gallery-card__media">
+              <img src="assets/images/gallery_plug_charge_closeup.jpg" alt="Підключення конектора CCS2 до порту електромобіля" loading="lazy" width="1280" height="714">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Технологія • Plug &amp; Charge</span>
+              <h3 class="gallery-card__title">Миттєвий старт через CCS2</h3>
+              <p class="gallery-card__meta">Безпечне рідинне охолодження кабелю та світлодіодна індикація</p>
+            </div>
+          </a>
+
+          <a href="assets/images/hero_bg.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Зарядна станція ChargeUA Gen-4 — автопідбір потужності під батарею авто">
+            <div class="gallery-card__media">
+              <img src="assets/images/hero_bg.jpg" alt="Зарядна колонка ChargeUA Gen-4 поряд із седаном" loading="lazy" width="1376" height="768">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Обладнання • Gen-4</span>
+              <h3 class="gallery-card__title">Термінал нового покоління</h3>
+              <p class="gallery-card__meta">Інтелектуальний розподіл потужності між двома портами</p>
+            </div>
+          </a>
+
+          <a href="assets/images/map_lviv.jpg" class="gallery-card" data-fancybox="chargeua-gallery" data-caption="Інтерактивна телеметрія мережі Львова — моніторинг 182 хабів у реальному часі">
+            <div class="gallery-card__media">
+              <img src="assets/images/map_lviv.jpg" alt="Схема розташування зарядних станцій ChargeUA у Львові" loading="lazy" width="1376" height="768">
+              <span class="gallery-card__zoom" aria-hidden="true"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
+            </div>
+            <div class="gallery-card__body">
+              <span class="gallery-card__tag">Львів • 182 локації</span>
+              <h3 class="gallery-card__title">Карта покриття Львівської області</h3>
+              <p class="gallery-card__meta">Live-статуси вільних роз'ємів по районах і на кільцевій дорозі</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         СЕКЦІЯ ВІДГУКІВ СПІЛЬНОТИ (SWIPER.JS V11, ЛР №10)
+         ========================================================================= -->
     <section class="section section--surface" id="reviews" aria-labelledby="reviews-title">
       <div class="container">
         <h2 class="section__title" id="reviews-title"><i class="fa-solid fa-comments" aria-hidden="true"></i>Відгуки спільноти електромобілістів</h2>
-        <div class="grid">
-          <article class="card">
-            <h3 class="visually-hidden">Відгук від власника електромобіля</h3>
-            <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
-            <blockquote class="review__text">Нарешті не стою в чергах на виїзді з Києва. Подивився статус на карті ChargeUA, побачив вільний порт CCS2, приїхав і за 20 хвилин зарядив 80% батареї.</blockquote>
-            <p class="review__author">Олександр, Київ (Tesla Model Y)</p>
-          </article>
-          <article class="card">
-            <h3 class="visually-hidden">Відгук від власника електромобіля</h3>
-            <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
-            <blockquote class="review__text">Plug&amp;Charge на станціях у Львові працює безвідмовно. Не треба шукати додатки на холоді — вставила кабель і все пішло!</blockquote>
-            <p class="review__author">Ірина, Львів (Hyundai Ioniq 5)</p>
-          </article>
-          <article class="card">
-            <h3 class="visually-hidden">Відгук від власника електромобіля</h3>
-            <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
-            <blockquote class="review__text">Найкраща підтримка! Коли на трасі біля Житомира була гроза, оператор оперативно перенаправив на вільний резервний хаб.</blockquote>
-            <p class="review__author">Максим, Одеса (Volkswagen ID.4)</p>
-          </article>
+
+        <div class="reviews-swiper-wrap">
+          <div class="swiper reviews-swiper" aria-label="Слайдер відгуків водіїв електромобілів">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Нарешті не стою в чергах на виїзді з Києва. Подивився статус на карті ChargeUA, побачив вільний порт CCS2, приїхав і за 20 хвилин зарядив 80% батареї.»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">ОК</span>
+                    <div>
+                      <p class="review-card__name">Олександр Коваль</p>
+                      <p class="review-card__car">Київ • Tesla Model Y</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Plug&amp;Charge на станціях у Львові працює безвідмовно. Не треба шукати додатки на холоді — вставила кабель і сесія стартує автоматично!»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">ІС</span>
+                    <div>
+                      <p class="review-card__name">Ірина Савчук</p>
+                      <p class="review-card__car">Львів • Hyundai Ioniq 5</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Найкраща підтримка! Коли на трасі біля Житомира зникло світло, оператор одразу спрямував на сусідній хаб із резервним генератором.»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">МБ</span>
+                    <div>
+                      <p class="review-card__name">Максим Бондар</p>
+                      <p class="review-card__car">Одеса • Volkswagen ID.4</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Нічний тариф Green Night по 8,90 ₴ — це справжня знахідка для щоденних поїздок у Дніпрі. Заощаджую майже вдвічі порівняно з денним тарифом.»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">ТМ</span>
+                    <div>
+                      <p class="review-card__name">Тарас Мельник</p>
+                      <p class="review-card__car">Дніпро • Zeekr 001</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Дуже зручний калькулятор на сайті: перед поїздкою до Буковелю порахував точні кіловати і бюджет поїздки до копійки без жодних сюрпризів.»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">ДГ</span>
+                    <div>
+                      <p class="review-card__name">Дмитро Гнатюк</p>
+                      <p class="review-card__car">Івано-Франківськ • BYD Song Plus</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="swiper-slide">
+                <article class="review-card">
+                  <div>
+                    <p class="review__rating" role="img" aria-label="Оцінка 5 з 5"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></p>
+                    <blockquote class="review__text">«Навіть для мого Nissan Leaf із CHAdeMO тут завжди є вільні порти біля ТРЦ «Мегамолл». Карта показує статус абсолютно точно.»</blockquote>
+                  </div>
+                  <div class="review-card__footer">
+                    <span class="review-card__avatar" aria-hidden="true">НП</span>
+                    <div>
+                      <p class="review-card__name">Наталія Поліщук</p>
+                      <p class="review-card__car">Вінниця • Nissan Leaf</p>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <div class="reviews-controls">
+            <div class="swiper-pagination reviews-pagination"></div>
+            <div class="reviews-nav-btns">
+              <button type="button" class="swiper-button-prev reviews-nav-btn reviews-prev" aria-label="Попередній відгук">
+                <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="swiper-button-next reviews-nav-btn reviews-next" aria-label="Наступний відгук">
+                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1779,6 +2205,7 @@
             <li><a href="#calculator">Калькулятор зарядки</a></li>
             <li><a href="#map">Карта мережі хабів</a></li>
             <li><a href="#stations">Каталог станцій</a></li>
+            <li><a href="#gallery">Галерея хабів</a></li>
             <li><a href="#benefits">Переваги мережі</a></li>
             <li><a href="#reviews">Відгуки водіїв</a></li>
           </ul>
@@ -1818,5 +2245,11 @@
   <script src="js/materials-slider.js?v=2" defer></script>
   <!-- Модуль валідації форми зворотного зв'язку -->
   <script src="js/validation.js" defer></script>
+  <!-- Зовнішні Vanilla JS медіабібліотеки через CDN (ЛР №10: Swiper.js v11, Fancybox v5, Typed.js v2.0.12) -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+  <!-- Модуль ініціалізації медіаплагінів ЛР №10 -->
+  <script src="js/media-plugins.js" defer></script>
 </body>
 </html>
