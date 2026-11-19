@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChargeUA • Звіт-сайт та тренажер до захисту ЛР №10</title>
+  <meta name="description" content="Інтерактивний веб-звіт до лабораторної роботи №10 «Інтеграція динамічних медіакомпонентів та JS-бібліотек» (Swiper.js v11, Fancybox v5, Typed.js, Git/Vercel CI/CD).">
+  <meta name="theme-color" content="#0b0f19">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-card: #1e293b;
+      --border: #334155;
+      --border-light: #1f293d;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #38bdf8;
+      --primary-strong: #0284c7;
+      --primary-glow: rgba(56, 189, 248, 0.16);
+      --accent: #10b981;
+      --accent-bg: rgba(16, 185, 129, 0.12);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --code-bg: #070b14;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
+    }
+
+    html.light {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-card: #f8fafc;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #005ec9;
+      --primary-strong: #004ba0;
+      --primary-glow: rgba(0, 94, 201, 0.12);
+      --accent: #059669;
+      --accent-bg: rgba(5, 150, 105, 0.1);
+      --warning: #b45309;
+      --warning-bg: rgba(245, 158, 11, 0.14);
+      --code-bg: #0f172a;
+      --shadow-card: 0 8px 24px -8px rgba(15, 23, 42, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 84px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* TOP STICKY HEADER */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(11, 15, 25, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+    }
+    html.light .topbar {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #005ec9, #38bdf8);
+      color: #fff;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .btn:hover {
+      border-color: var(--primary);
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: var(--primary-strong);
+      border-color: var(--primary-strong);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #0b0f19;
+    }
+
+    /* SEARCH & FILTER BAR */
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 9px 36px 9px 14px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+    .search-clear {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 6px;
+      display: none;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .filter-chips::-webkit-scrollbar { display: none; }
+
+    .chip {
+      white-space: nowrap;
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .chip:hover { color: var(--text); border-color: var(--primary); }
+    .chip.active {
+      background: var(--primary-strong);
+      border-color: var(--primary-strong);
+      color: #fff;
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* PASSPORT HERO CARD */
+    .passport-card {
+      background: linear-gradient(135deg, rgba(0, 94, 201, 0.14), rgba(16, 185, 129, 0.08));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .passport-meta-top {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    .passport-card h1 {
+      font-size: clamp(20px, 3vw, 28px);
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .passport-lead {
+      color: var(--text-muted);
+      font-size: 14.5px;
+      max-width: 820px;
+      margin-bottom: 16px;
+    }
+
+    .passport-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .passport-item {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .passport-item span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .passport-item strong {
+      font-size: 13.5px;
+      color: var(--text);
+    }
+
+    .links-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* SECTION CARDS */
+    .section-block {
+      background: var(--surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      color: var(--primary);
+    }
+
+    p + p { margin-top: 10px; }
+
+    /* TABLES */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      min-width: 580px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+    th {
+      background: var(--surface-card);
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .status-ok {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* CODE BOX */
+    .code-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .code-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+      color: #cbd5e1;
+      font-weight: 600;
+    }
+    .copy-btn {
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #f8fafc;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .copy-btn:hover { background: #334155; }
+    pre {
+      padding: 14px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #e2e8f0;
+    }
+
+    /* SCREENSHOTS GRID */
+    .shots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .shot-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: zoom-in;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .shot-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+    }
+    .shot-thumb {
+      aspect-ratio: 16 / 10;
+      background: #020617;
+      overflow: hidden;
+    }
+    .shot-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .shot-cap {
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* ACCORDION Q&A */
+    .qa-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .qa-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .qa-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .qa-num {
+      color: var(--primary);
+      margin-right: 6px;
+    }
+    .qa-icon {
+      color: var(--text-dim);
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .qa-item.open .qa-icon {
+      transform: rotate(180deg);
+      color: var(--primary);
+    }
+    .qa-body {
+      display: none;
+      padding: 0 16px 14px;
+      border-top: 1px solid var(--border-light);
+    }
+    .qa-item.open .qa-body { display: block; }
+    .qa-short {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-bg);
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+    }
+    .qa-short strong {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .qa-detail {
+      margin-top: 8px;
+      font-size: 13.5px;
+      color: var(--text-muted);
+    }
+
+    /* LIGHTBOX MODAL FOR SCREENSHOTS */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(2, 6, 23, 0.9);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-content {
+      max-width: 1060px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-content img {
+      max-width: 100%;
+      max-height: 82vh;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .modal-caption {
+      color: #e2e8f0;
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .modal-close {
+      position: fixed;
+      top: 16px;
+      right: 20px;
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #0f172a;
+      color: #f8fafc;
+      border: 1px solid var(--primary);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      z-index: 10000;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-row">
+        <div class="brand">
+          <span class="brand-badge">ЛР №10</span>
+          <span>Звіт-сайт • ChargeUA</span>
+        </div>
+        <div class="topbar-actions">
+          <a class="btn btn-primary" href="https://chargeua-landing.vercel.app/" target="_blank" rel="noopener">Живий сайт (Vercel) ↗</a>
+          <a class="btn" href="https://github.com/AndriyLemishka/chargeua-landing" target="_blank" rel="noopener">GitHub (31b4cbe) ↗</a>
+          <button type="button" class="btn" id="expandAllBtn">Розгорнути питання</button>
+          <button type="button" class="btn" id="themeToggleBtn" aria-label="Перемкнути тему">Світла тема</button>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <div class="search-wrap">
+          <input type="search" id="searchInput" class="search-input" placeholder="Пошук по звіту, коду, плагінах і 14 питаннях до захисту...">
+          <button type="button" id="clearSearchBtn" class="search-clear" aria-label="Очистити пошук">✕</button>
+        </div>
+        <div class="filter-chips" role="tablist" aria-label="Фільтр розділів звіту">
+          <button type="button" class="chip active" data-filter="all">Усі розділи</button>
+          <button type="button" class="chip" data-filter="architecture">Архітектура & CDN</button>
+          <button type="button" class="chip" data-filter="code">Вихідний код</button>
+          <button type="button" class="chip" data-filter="screenshots">Скріншоти (7)</button>
+          <button type="button" class="chip" data-filter="qa-prompts">QA & Промпти</button>
+          <button type="button" class="chip" data-filter="defense">Захист (14 питань)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ПАСПОРТ РОБОТИ -->
+    <section class="passport-card">
+      <div class="passport-meta-top">НУ «Львівська політехніка» • ІКНІ • Кафедра САПР • Технології веброзробки та дизайну</div>
+      <h1>Лабораторна робота №10: Інтеграція динамічних медіакомпонентів та JS-бібліотек</h1>
+      <p class="passport-lead">
+        Інтерактивний звіт-портал до здачі та усного захисту. У лендинг національної мережі швидкісних електрозарядок <strong>ChargeUA</strong> інтегровано автономні Vanilla JS бібліотеки <strong>Swiper.js v11</strong>, <strong>Fancybox v5</strong> та <strong>Typed.js v2.0.12</strong> через jsDelivr CDN, виконано аудит у Chrome DevTools (1280px / 375px) та налаштовано CI/CD деплой на Vercel.
+      </p>
+      <div class="passport-grid">
+        <div class="passport-item"><span>Виконав</span><strong>Лемішка А.А., гр. ПП-24</strong></div>
+        <div class="passport-item"><span>Прийняла</span><strong>Стефанович Т.О.</strong></div>
+        <div class="passport-item"><span>Коміт у GitHub</span><strong>31b4cbe (гілка main)</strong></div>
+        <div class="passport-item"><span>Стан консолі</span><strong>0 помилок JS / 0×404</strong></div>
+      </div>
+      <div class="links-bar">
+        <a class="btn btn-primary" href="https://chargeua-landing.vercel.app/" target="_blank" rel="noopener">Відкрити Production Demo (Vercel)</a>
+        <a class="btn" href="https://github.com/AndriyLemishka/chargeua-landing/commit/31b4cbe" target="_blank" rel="noopener">Переглянути коміт 31b4cbe на GitHub</a>
+      </div>
+    </section>
+
+    <!-- 1. МЕТА ТА ОБҐРУНТУВАННЯ ПЛАГІНІВ -->
+    <section class="section-block report-section" data-cat="architecture">
+      <div class="section-header">
+        <h2 class="section-title">1. Мета роботи та вибір Vanilla JS бібліотек</h2>
+        <span class="section-tag">Архітектура без jQuery</span>
+      </div>
+      <p>Для сайту ChargeUA ключова вимога — швидке завантаження на мобільному інтернеті водія на трасі. Тягнути jQuery (~30 КБ у gzip) заради Slick Carousel чи Lightbox2 тут недоцільно: сучасний DOM API перекриває потреби самостійно.</p>
+      <p>Саме тому в проєкт підключено три автономні бібліотеки без залежностей. Стилі завантажуються у <code>&lt;head&gt;</code>, щоб не було миготіння нестилізованого контенту (<strong>FOUC</strong>), а скрипти — в кінці <code>&lt;body&gt;</code> із <code>defer</code> та обгорткою в <code>DOMContentLoaded</code>.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Секція ChargeUA</th>
+              <th>Обраний плагін (CDN)</th>
+              <th>Чому не jQuery-аналог</th>
+              <th>Налаштований функціонал</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>#reviews</strong> (Відгуки водіїв)</td>
+              <td>Swiper.js v11</td>
+              <td>Slick потребує jQuery і не має сучасного touch-рушія</td>
+              <td>6 слайдів, <code>loop: true</code>, <code>autoplay</code> + <code>pauseOnMouseEnter</code>, брейкпоінти 1/2/3, <code>a11y</code></td>
+            </tr>
+            <tr>
+              <td><strong>#gallery</strong> (Галерея хабів)</td>
+              <td>Fancybox v5</td>
+              <td>Lightbox2 не підтримує плавний pinch-to-zoom і тулбар прев’ю</td>
+              <td>CSS Grid із 6 фото, <code>data-fancybox="chargeua-gallery"</code>, Panzoom до 3x, <code>fade</code></td>
+            </tr>
+            <tr>
+              <td><strong>.hero-sec</strong> (Hero-переваги)</td>
+              <td>Typed.js v2.0.12</td>
+              <td>Самописні таймери дають стрибки верстки (CLS)</td>
+              <td>4 слогани про DC 160 кВт, генератори та Green Night із <code>smartBackspace</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. ВИХІДНИЙ КОД ТА КОНФІГУРАЦІЯ -->
+    <section class="section-block report-section" data-cat="code">
+      <div class="section-header">
+        <h2 class="section-title">2. CDN-підключення, HTML-розмітка та JS-конфігурація</h2>
+        <span class="section-tag">index.html + js/media-plugins.js</span>
+      </div>
+
+      <div class="code-box">
+        <div class="code-head">
+          <span>Підключення стилів у &lt;head&gt; та скриптів перед &lt;/body&gt; (index.html)</span>
+          <button type="button" class="copy-btn" onclick="copyCode(this)">Копіювати</button>
+        </div>
+        <pre><code>&lt;!-- У &lt;head&gt;: запобігаємо ефекту FOUC --&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"&gt;
+&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"&gt;
+
+&lt;!-- Перед &lt;/body&gt;: неблокуюче завантаження через defer --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js" defer&gt;&lt;/script&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer&gt;&lt;/script&gt;
+&lt;script src="js/media-plugins.js" defer&gt;&lt;/script&gt;</code></pre>
+      </div>
+
+      <div class="code-box">
+        <div class="code-head">
+          <span>Ініціалізація та об’єкти конфігурації (js/media-plugins.js)</span>
+          <button type="button" class="copy-btn" onclick="copyCode(this)">Копіювати</button>
+        </div>
+        <pre><code>document.addEventListener('DOMContentLoaded', () =&gt; {
+  // 1. Typed.js у Hero-секції
+  const typedTarget = document.querySelector('#typed-text');
+  if (typedTarget && typeof window.Typed !== 'undefined') {
+    typedTarget.textContent = '';
+    new window.Typed('#typed-text', {
+      strings: [
+        'зарядка 10→80% за 20 хвилин на хабах DC 160 кВт.',
+        '480+ станцій по всій Україні зі статусом онлайн.',
+        'робота від генераторів та накопичувачів у блекаути.',
+        'нічний тариф Green Night — 8,90 ₴/кВт·год.'
+      ],
+      typeSpeed: 42, backSpeed: 24, backDelay: 2200,
+      startDelay: 300, loop: true, smartBackspace: true
+    });
+  }
+
+  // 2. Swiper.js v11 (#reviews)
+  const reviewsEl = document.querySelector('.reviews-swiper');
+  if (reviewsEl && typeof window.Swiper !== 'undefined') {
+    new window.Swiper('.reviews-swiper', {
+      loop: true, spaceBetween: 24, speed: 600, grabCursor: true,
+      autoplay: { delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true },
+      pagination: { el: '.reviews-pagination', clickable: true },
+      navigation: { nextEl: '.reviews-next', prevEl: '.reviews-prev' },
+      a11y: { prevSlideMessage: 'Попередній відгук', nextSlideMessage: 'Наступний відгук' },
+      breakpoints: {
+        320: { slidesPerView: 1, spaceBetween: 16 },
+        768: { slidesPerView: 2, spaceBetween: 20 },
+        1024: { slidesPerView: 3, spaceBetween: 24 }
+      }
+    });
+  }
+
+  // 3. Fancybox v5 (#gallery)
+  if (typeof window.Fancybox !== 'undefined') {
+    window.Fancybox.bind('[data-fancybox="chargeua-gallery"]', {
+      Carousel: { Transition: 'fade' },
+      Images: { Panzoom: { maxScale: 3 } },
+      Toolbar: {
+        display: {
+          left: ['infobar'],
+          middle: ['zoomIn', 'zoomOut', 'toggle1to1'],
+          right: ['slideshow', 'thumbs', 'close']
+        }
+      }
+    });
+  }
+});</code></pre>
+      </div>
+    </section>
+
+    <!-- 3. ГАЛЕРЕЯ СКРІНШОТІВ -->
+    <section class="section-block report-section" data-cat="screenshots">
+      <div class="section-header">
+        <h2 class="section-title">3. Технічний скріншот-звіт (Chrome DevTools, GitHub, Vercel)</h2>
+        <span class="section-tag">Натисніть для збільшення</span>
+      </div>
+      <div class="shots-grid">
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/01_hero_typedjs_desktop.png', 'Рис. 1. Hero-секція з Typed.js та 11-пунктною однорядковою навігацією (1280px)')">
+          <div class="shot-thumb"><img src="assets/lab10-report/01_hero_typedjs_desktop.png" alt="Hero-секція з Typed.js" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 1. Hero з Typed.js та однорядковою шапкою (1280px)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/02_gallery_fancybox_grid.png', 'Рис. 2. Нова секція #gallery: 3-колонкова CSS Grid сітка з 6 об’єктами ChargeUA')">
+          <div class="shot-thumb"><img src="assets/lab10-report/02_gallery_fancybox_grid.png" alt="Галерея CSS Grid" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 2. Сітка галереї #gallery (6 об’єктів ChargeUA)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/03_fancybox_modal_zoom.png', 'Рис. 3. Активне модальне вікно Fancybox v5 з тулбаром масштабування і прев’ю')">
+          <div class="shot-thumb"><img src="assets/lab10-report/03_fancybox_modal_zoom.png" alt="Модалка Fancybox v5" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 3. Модалка Fancybox v5 (інфобар 1/6, zoom 3x, thumbs)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/04_reviews_swiper_desktop.png', 'Рис. 4. Десктопний слайдер Swiper.js v11 (3 картки в ряд, автоплей, пагінація)')">
+          <div class="shot-thumb"><img src="assets/lab10-report/04_reviews_swiper_desktop.png" alt="Слайдер Swiper десктоп" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 4. Swiper.js v11 на десктопі (3 слайди в ряд)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/05_reviews_mobile_375px.png', 'Рис. 5. Мобільна емуляція 375×812px у Chrome DevTools: 1 слайд, scrollWidth = 375px')">
+          <div class="shot-thumb"><img src="assets/lab10-report/05_reviews_mobile_375px.png" alt="Слайдер Swiper мобільний" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 5. Мобільна емуляція 375px (1 слайд, без скролу)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/06_github_repo_lab10.png', 'Рис. 6. Публічний репозиторій на GitHub із комітом 31b4cbe та статусом перевірки')">
+          <div class="shot-thumb"><img src="assets/lab10-report/06_github_repo_lab10.png" alt="GitHub репозиторій" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 6. GitHub репозиторій (коміт 31b4cbe)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab10-report/07_vercel_live_demo.png', 'Рис. 7. Продакшн-сайт на Vercel (https://chargeua-landing.vercel.app/) після CI/CD')">
+          <div class="shot-thumb"><img src="assets/lab10-report/07_vercel_live_demo.png" alt="Живий сайт Vercel" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 7. Продакшн Vercel після автодеплою</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 4. QA ТАБЛИЦЯ ТА ПРОМПТ-ПАСПОРТ -->
+    <section class="section-block report-section" data-cat="qa-prompts">
+      <div class="section-header">
+        <h2 class="section-title">4. Аудит у Chrome DevTools та Промпт-паспорт</h2>
+        <span class="section-tag">QA + Prompt Log</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Перевірка</th>
+              <th>Інструмент / Роздільність</th>
+              <th>Результат</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CDN & Мережа</td>
+              <td>DevTools Network</td>
+              <td>Усі скрипти, CSS, шрифти, фото та favicon — 200 OK</td>
+              <td><span class="status-ok">Пройдено</span></td>
+            </tr>
+            <tr>
+              <td>Чистота консолі</td>
+              <td>DevTools Console</td>
+              <td>0 помилок JS та 0 мережевих 404</td>
+              <td><span class="status-ok">Пройдено</span></td>
+            </tr>
+            <tr>
+              <td>Шапка на 1280px</td>
+              <td>1280×820 (11 пунктів меню)</td>
+              <td>Звужено відступи, прибрано переповнення (hdrScrollW = 1240px)</td>
+              <td><span class="status-ok">Пройдено</span></td>
+            </tr>
+            <tr>
+              <td>Мобільний тач-свайп</td>
+              <td>Emulation 375×812 touch</td>
+              <td>1 слайд у ряд, scrollWidth = 375px, свайп і крапки працюють</td>
+              <td><span class="status-ok">Пройдено</span></td>
+            </tr>
+            <tr>
+              <td>Модалка Fancybox</td>
+              <td>1280px + Esc</td>
+              <td>Виправлено z-index (99999) поверх шапки; зум 3x і Esc справні</td>
+              <td><span class="status-ok">Пройдено</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Етап</th>
+              <th>Суть промпту до ШІ</th>
+              <th>Результат та інженерне доопрацювання</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Swiper.js</strong></td>
+              <td>Senior Frontend: заміни #reviews на Swiper 11 з 6 картками, брейкпоінтами 1/2/3, loop та pauseOnMouseEnter.</td>
+              <td>Вичищено старий CSS <code>#reviews .grid</code>, додано адаптивну пагінацію і кнопки з 44px тач-зоною.</td>
+            </tr>
+            <tr>
+              <td><strong>2. Fancybox v5</strong></td>
+              <td>UI/UX Engineer: створи 6-карткову галерею #gallery (CSS Grid) із зумом і fade-переходом.</td>
+              <td>Згенеровано 4 фото станцій ChargeUA, піднято <code>.fancybox__container</code> на <code>z-index: 99999</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>3. Typed.js</strong></td>
+              <td>Performance Engineer: додай динамічний друк у Hero без впливу на <code>&lt;h1&gt;</code> і без CLS.</td>
+              <td>Створено <code>.hero-typed-line</code> із фіксованою висотою і fallback-текстом до ініціалізації JS.</td>
+            </tr>
+            <tr>
+              <td><strong>4. CI/CD реліз</strong></td>
+              <td>DevOps: закоміть у main за Conventional Commits і перевір автодеплой на Vercel.</td>
+              <td>Коміт <code>31b4cbe</code> успішно зібрався на Vercel та оновив продакшн за лічені секунди.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. 14 КОНТРОЛЬНИХ ЗАПИТАНЬ ДО ЗАХИСТУ -->
+    <section class="section-block report-section" data-cat="defense">
+      <div class="section-header">
+        <h2 class="section-title">5. Тренажер до захисту: 14 контрольних запитань САПР</h2>
+        <span class="section-tag">Бліц + Деталі</span>
+      </div>
+      <div class="qa-list" id="qaList"></div>
+    </section>
+
+    <div class="empty-state" id="emptyState">
+      За вашим пошуковим запитом збігів не знайдено. Очистіть поле пошуку або оберіть вкладку «Усі розділи».
+    </div>
+  </main>
+
+  <!-- МОДАЛКА ДЛЯ СКРІНШОТІВ -->
+  <div class="modal-backdrop" id="imgModal" role="dialog" aria-modal="true" aria-labelledby="modalCaption">
+    <button type="button" class="modal-close" id="closeModalBtn">Закрити (Esc)</button>
+    <div class="modal-content">
+      <img id="modalImg" src="" alt="">
+      <p class="modal-caption" id="modalCaption"></p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Скопійовано!</div>
+
+  <script>
+    const qaData = [
+      {
+        q: "Чому файли стилів (CSS) плагіна потрібно підключати в тезі <head>, а JS-файли скриптів — в самому кінці сторінки перед закриваючим тегом </body>?",
+        short: "CSS у <head> потрібен, щоб браузер одразу знав геометрію слайдів і прихованих вікон до малювання (без FOUC). JS у кінці <body> (або з defer) не блокує побудову HTML-сторінки.",
+        detail: "Якщо винести CSS вниз, користувач побачить на мить розсипані картинки. А важкий <script> у <head> без defer змушує парсер HTML зупинятися, доки файл не скачається й не виконається."
+      },
+      {
+        q: "Що таке CDN (Content Delivery Network) і яка головна перевага його використання для підключення таких плагінів, як Swiper чи Slick?",
+        short: "Географічно розподілена мережа серверів. Бібліотека завантажується з найближчого до користувача вузла, знімає навантаження з нашого хостингу й часто вже є в кеші браузера.",
+        detail: "У нашій роботі ми використали jsDelivr CDN для Swiper.js v11, Fancybox v5 та Typed.js."
+      },
+      {
+        q: "Якщо плагін (наприклад, Slick Carousel або Unite Gallery) базується на jQuery, чому суворо заборонено міняти місцями теги <script> підключення jQuery та самого плагіна?",
+        short: "Скрипти виконуються послідовно. Якщо Slick завантажиться першим, він спробує розширити об’єкт $ / jQuery, якого ще не існує, і впаде з помилкою ReferenceError.",
+        detail: "Залежності завжди йдуть вище в HTML-документі, ніж плагіни, які їх викликають."
+      },
+      {
+        q: "Що таке «об’єкт конфігурації» в JavaScript і яку роль він має під час ініціалізації сторонніх плагінів?",
+        short: "Це JS-об’єкт формату { ключ: значення }, який передається в конструктор плагіна (наприклад, new Swiper('.reviews-swiper', { loop: true, speed: 600 })) і змінює поведінку без правки коду бібліотеки.",
+        detail: "У js/media-plugins.js через об’єкти конфігурації ми налаштували автоплей, брейкпоінти, Panzoom та швидкість друку."
+      },
+      {
+        q: "Що станеться, якщо забути обгорнути код ініціалізації jQuery-плагіна в обробник події $(document).ready()?",
+        short: "Якщо скрипт запуститься до побудови DOM-дерева, селектор поверне порожню колекцію елементів і віджет просто не запрацює.",
+        detail: "Для сучасного Vanilla JS аналогом виступає document.addEventListener('DOMContentLoaded', () => { ... })."
+      },
+      {
+        q: "Як в плагінах (наприклад, Swiper) реалізується адаптивність під мобільні пристрої та планшети? Який параметр за це відповідає?",
+        short: "Через властивість breakpoints у конфігурації за принципом Mobile First: 320: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }.",
+        detail: "Кожен поріг у пікселях задає кількість видимих карток і відступ spaceBetween для відповідного розміру екрана."
+      },
+      {
+        q: "Під час захисту викладач зменшує вікно браузера, і картинки в каруселі Slick починають наповзати одна на одну або стають занадто вузькими. Якої помилки в CSS-стилізації припустився студент?",
+        short: "Задана жорстка фіксована ширина в px, бракує max-width: 100%, або зовнішні стилі (.grid) перебили системну геометрію слайдів.",
+        detail: "З цим ми зіткнулись при рефакторингу ChargeUA: довелось прибрати старе мобільне правило #reviews .grid, щоб Swiper сам керував шириною .swiper-slide."
+      },
+      {
+        q: "Що робить функція autoplay в налаштуваннях слайдера та який супутній параметр зазвичай регулює швидкість цієї дії?",
+        short: "Autoplay автоматично перегортає слайди без кліку. Паузу між перемиканнями задає параметр delay у Swiper (3500 мс) або autoplaySpeed у Slick.",
+        detail: "Для зручного читання відгуків у ChargeUA ми додатково увімкнули pauseOnMouseEnter: true."
+      },
+      {
+        q: "Як за допомогою вбудованого інструмента інспектора браузера (DevTools) перевірити, чи коректно працює тач-скрол на мобільних пристроях для віджета?",
+        short: "Увімкнути Toggle Device Toolbar (Ctrl+Shift+M), обрати ширину 375px — курсор стане сенсорним колом для перевірки свайпів, а в Console перевірити document.documentElement.scrollWidth === 375.",
+        detail: "На скріншоті Рис. 5 підтверджено, що при 375×812px відображається 1 картка без горизонтального скролу."
+      },
+      {
+        q: "В чому полягає різниця між параметром speed (швидкість) та параметром autoplay speed/delay (затримка автоплею) в конфігурації слайдера?",
+        short: "speed — тривалість самого переходу анімації (600 мс), а autoplay.delay — час нерухомого показу слайда перед наступним кроком (3500 мс).",
+        detail: "Збільшення speed робить анімацію повільнішою, а збільшення delay дає користувачу більше часу прочитати картку."
+      },
+      {
+        q: "Що таке ефект FOUC (Flash of Unstyled Content) стосовно слайдерів і як студент може запобігти йому за допомогою базового CSS?",
+        short: "Коротке миготіння нестилізованої верстки до застосування CSS/JS. Лікується підключенням стилів у <head>, overflow: hidden та фіксацією min-height контейнера.",
+        detail: "Для Typed.js ми додатково задали min-height для .hero-typed-line та початковий текст усередині тегу."
+      },
+      {
+        q: "Ви скопіювали промпт для ініціалізації галереї Unite Gallery, але на сторінці нічого не з’явилося, а в консолі горить помилка jQuery is not defined. Що це означає?",
+        short: "Бібліотека jQuery або взагалі не підключена, або її тег <script> стоїть нижче за скрипт самого плагіна.",
+        detail: "Браузер виконує код згори вниз — на момент запуску Unite Gallery глобальна змінна jQuery ще відсутня."
+      },
+      {
+        q: "Якщо в об’єкті конфігурації виставити параметр infinite: true (або loop: true), як змінюється поведінка каруселі під час досягнення останнього слайда?",
+        short: "Карусель зациклюється: після останнього слайда користувач безшовно переходить на перший, а не впирається в глухий край.",
+        detail: "Технічно плагін створює клоновані слайди на краях доріжки, тому перехід виглядає безперервним."
+      },
+      {
+        q: "В чому головна технологічна відмінність сучасного плагіна Swiper.js від старішого Slick Carousel в контексті архітектури коду?",
+        short: "Swiper.js написаний на модульному Vanilla JS (ES6+) без jQuery, використовує CSS3 3D-трансформації з GPU-прискоренням та нативні Pointer/Touch події.",
+        detail: "Slick Carousel архітектурно прив’язаний до jQuery, тому в нових проєктах без legacy-залежностей він програє за вагою й продуктивністю."
+      }
+    ];
+
+    const qaList = document.getElementById('qaList');
+    qaData.forEach((item, idx) => {
+      const el = document.createElement('article');
+      el.className = 'qa-item';
+      el.innerHTML = `
+        <button type="button" class="qa-btn" aria-expanded="false">
+          <span><span class="qa-num">#${idx + 1}</span>${item.q.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>
+          <span class="qa-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="qa-body">
+          <div class="qa-short">
+            <strong>Бліц-відповідь для захисту</strong>
+            ${item.short.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+          </div>
+          <p class="qa-detail">${item.detail.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+        </div>
+      `;
+      const btn = el.querySelector('.qa-btn');
+      btn.addEventListener('click', () => {
+        const isOpen = el.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
+      });
+      qaList.appendChild(el);
+    });
+
+    // Тема Dark / Light
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.addEventListener('click', () => {
+      const isLight = htmlEl.classList.toggle('light');
+      htmlEl.classList.toggle('dark', !isLight);
+      themeBtn.textContent = isLight ? 'Темна тема' : 'Світла тема';
+    });
+
+    // Розгорнути / згорнути всі питання
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    let allOpen = false;
+    expandAllBtn.addEventListener('click', () => {
+      allOpen = !allOpen;
+      document.querySelectorAll('.qa-item').forEach(item => {
+        item.classList.toggle('open', allOpen);
+        item.querySelector('.qa-btn').setAttribute('aria-expanded', String(allOpen));
+      });
+      expandAllBtn.textContent = allOpen ? 'Згорнути питання' : 'Розгорнути питання';
+    });
+
+    // Фільтри та пошук
+    const chips = document.querySelectorAll('.chip');
+    const sections = document.querySelectorAll('.report-section');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const emptyState = document.getElementById('emptyState');
+    let activeFilter = 'all';
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      clearSearchBtn.style.display = q ? 'block' : 'none';
+      let visibleSections = 0;
+
+      sections.forEach(sec => {
+        const cat = sec.dataset.cat;
+        const matchesCat = activeFilter === 'all' || cat === activeFilter;
+
+        if (!matchesCat) {
+          sec.style.display = 'none';
+          return;
+        }
+
+        if (!q) {
+          sec.style.display = 'block';
+          if (cat === 'defense') {
+            sec.querySelectorAll('.qa-item').forEach(i => { i.style.display = 'block'; });
+          }
+          visibleSections++;
+          return;
+        }
+
+        if (cat === 'defense') {
+          let qaHits = 0;
+          sec.querySelectorAll('.qa-item').forEach(item => {
+            const hit = item.textContent.toLowerCase().includes(q);
+            item.style.display = hit ? 'block' : 'none';
+            if (hit) {
+              item.classList.add('open');
+              item.querySelector('.qa-btn').setAttribute('aria-expanded', 'true');
+              qaHits++;
+            }
+          });
+          sec.style.display = qaHits > 0 ? 'block' : 'none';
+          if (qaHits > 0) visibleSections++;
+        } else {
+          const hit = sec.textContent.toLowerCase().includes(q);
+          sec.style.display = hit ? 'block' : 'none';
+          if (hit) visibleSections++;
+        }
+      });
+
+      emptyState.style.display = visibleSections === 0 ? 'block' : 'none';
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        applyFilters();
+      });
+    });
+
+    searchInput.addEventListener('input', applyFilters);
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilters();
+      searchInput.focus();
+    });
+
+    // Модалка скріншотів
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCap = document.getElementById('modalCaption');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
+    window.openLightbox = function(src, caption) {
+      modalImg.src = src;
+      modalImg.alt = caption;
+      modalCap.textContent = caption;
+      modal.classList.add('open');
+    };
+    function closeLightbox() { modal.classList.remove('open'); }
+    closeModalBtn.addEventListener('click', closeLightbox);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeLightbox(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+    // Копіювання коду
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    window.copyCode = function(btn) {
+      const code = btn.closest('.code-box').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Скопійовано';
+        setTimeout(() => { btn.textContent = 'Копіювати'; }, 1800);
+        clearTimeout(toastTimer);
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    };
+  </script>
+</body>
+</html>
