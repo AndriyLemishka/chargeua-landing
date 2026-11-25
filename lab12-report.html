@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChargeUA • Звіт-сайт та тренажер до захисту ЛР №12</title>
+  <meta name="description" content="Інтерактивний веб-звіт до лабораторної роботи №12: Google PageSpeed Insights (64→95), Core Web Vitals, GitHub Actions CI/CD, QR-код тестування та 12 питань САПР.">
+  <meta name="theme-color" content="#0b0f19">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-card: #1e293b;
+      --border: #334155;
+      --border-light: #1f293d;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #38bdf8;
+      --primary-strong: #0284c7;
+      --primary-glow: rgba(56, 189, 248, 0.16);
+      --accent: #10b981;
+      --accent-bg: rgba(16, 185, 129, 0.12);
+      --warn: #f59e0b;
+      --warn-bg: rgba(245, 158, 11, 0.14);
+      --code-bg: #070b14;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
+    }
+    html.light {
+      --bg: #f1f5f9; --surface: #ffffff; --surface-card: #f8fafc;
+      --border: #cbd5e1; --border-light: #e2e8f0; --text: #0f172a;
+      --text-muted: #475569; --text-dim: #64748b; --primary: #005ec9;
+      --primary-strong: #004ba0; --primary-glow: rgba(0, 94, 201, 0.12);
+      --accent: #059669; --accent-bg: rgba(5, 150, 105, 0.1);
+      --warn: #b45309; --warn-bg: rgba(245, 158, 11, 0.14);
+      --code-bg: #0f172a; --shadow-card: 0 8px 24px -8px rgba(15, 23, 42, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.6; padding-bottom: 84px; transition: background-color 0.25s ease, color 0.25s ease; font-size: 15px; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .topbar { position: sticky; top: 0; z-index: 100; background: rgba(11, 15, 25, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-light); }
+    html.light .topbar { background: rgba(255, 255, 255, 0.92); }
+    .topbar-inner { max-width: 1120px; margin: 0 auto; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; }
+    .brand-badge { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 9px; border-radius: 999px; background: linear-gradient(135deg, #10b981, #0284c7); color: #fff; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 10px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+    .btn:hover { border-color: var(--primary); text-decoration: none; }
+    .btn-primary { background: var(--primary-strong); border-color: var(--primary-strong); color: #fff; }
+    .btn-primary:hover { background: var(--primary); border-color: var(--primary); color: #0b0f19; }
+
+    .controls-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-input { width: 100%; padding: 9px 36px 9px 14px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 14px; outline: none; }
+    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: transparent; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 4px 6px; display: none; }
+    .filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .chip { white-space: nowrap; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer; }
+    .chip.active { background: var(--primary-strong); border-color: var(--primary-strong); color: #fff; }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 20px 16px 40px; }
+    .passport-card { background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(0, 94, 201, 0.12)); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 22px; box-shadow: var(--shadow-card); }
+    .passport-meta-top { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 6px; }
+    .passport-card h1 { font-size: clamp(20px, 3vw, 28px); line-height: 1.25; margin-bottom: 10px; }
+    .passport-lead { color: var(--text-muted); font-size: 14.5px; max-width: 840px; margin-bottom: 16px; }
+    .scores-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .score-pill { background: var(--surface); border: 1px solid var(--border-light); border-radius: 14px; padding: 12px 14px; text-align: center; }
+    .score-pill span { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; }
+    .score-pill strong { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .score-pill small { display: block; font-size: 11.5px; color: var(--text-muted); }
+
+    .section-block { background: var(--surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px; margin-bottom: 18px; box-shadow: var(--shadow-card); }
+    .section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light); }
+    .section-title { font-size: 18px; font-weight: 800; }
+    .section-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px; background: var(--surface-card); border: 1px solid var(--border); color: var(--primary); }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border-light); border-radius: 12px; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 580px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    th { background: var(--surface-card); font-weight: 700; color: var(--primary); font-size: 12px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: none; }
+    .badge-warn { display: inline-block; padding: 2px 8px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); font-weight: 700; font-size: 12px; }
+    .badge-ok { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--accent-bg); color: var(--accent); font-weight: 700; font-size: 12px; }
+
+    .code-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 12px; }
+    .code-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--border); font-size: 12px; color: #cbd5e1; font-weight: 600; }
+    .copy-btn { border: 1px solid #475569; background: #1e293b; color: #f8fafc; border-radius: 6px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; }
+    pre { padding: 14px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: #e2e8f0; }
+
+    .shots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .shot-card { background: var(--surface-card); border: 1px solid var(--border-light); border-radius: 14px; overflow: hidden; cursor: zoom-in; transition: transform 0.2s ease, border-color 0.2s ease; }
+    .shot-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .shot-thumb { aspect-ratio: 16 / 10; background: #020617; overflow: hidden; }
+    .shot-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .shot-cap { padding: 10px 12px; font-size: 12.5px; color: var(--text-muted); font-weight: 600; }
+
+    .qr-grid { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: center; margin-top: 10px; }
+    @media (min-width: 700px) { .qr-grid { grid-template-columns: 1.3fr auto; } }
+    .qr-box { background: #ffffff; padding: 14px; border-radius: 14px; display: inline-flex; flex-direction: column; align-items: center; gap: 8px; border: 2px solid var(--border); }
+    .qr-box a { font-size: 12px; font-weight: 700; color: #005ec9; word-break: break-all; }
+
+    .qa-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .qa-item { background: var(--surface-card); border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; }
+    .qa-btn { width: 100%; text-align: left; padding: 14px 16px; background: transparent; border: none; color: var(--text); font-size: 14.5px; font-weight: 700; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; cursor: pointer; }
+    .qa-num { color: var(--primary); margin-right: 6px; }
+    .qa-icon { color: var(--text-dim); transition: transform 0.2s ease; flex-shrink: 0; }
+    .qa-item.open .qa-icon { transform: rotate(180deg); color: var(--primary); }
+    .qa-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border-light); }
+    .qa-item.open .qa-body { display: block; }
+    .qa-short { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--accent); background: var(--accent-bg); border-radius: 0 8px 8px 0; font-size: 13.5px; }
+    .qa-short strong { display: block; font-size: 11px; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+    .qa-detail { margin-top: 8px; font-size: 13.5px; color: var(--text-muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 9999; background: rgba(2, 6, 23, 0.9); display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-backdrop.open { display: flex; }
+    .modal-content { max-width: 1060px; width: 100%; text-align: center; }
+    .modal-content img { max-width: 100%; max-height: 82vh; border-radius: 12px; border: 1px solid var(--border); }
+    .modal-caption { color: #e2e8f0; margin-top: 10px; font-size: 14px; font-weight: 600; }
+    .modal-close { position: fixed; top: 16px; right: 20px; background: #1e293b; color: #fff; border: 1px solid #475569; border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #f8fafc; border: 1px solid var(--primary); padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 10000; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .empty-state { display: none; text-align: center; padding: 36px 16px; color: var(--text-muted); background: var(--surface); border: 1px dashed var(--border); border-radius: 16px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-row">
+        <div class="brand">
+          <span class="brand-badge">ЛР №12 • Фінал</span>
+          <span>Звіт-сайт • ChargeUA</span>
+        </div>
+        <div class="topbar-actions">
+          <a class="btn btn-primary" href="https://chargeua-landing.vercel.app/" target="_blank" rel="noopener">Живий сайт (Vercel) ↗</a>
+          <a class="btn" href="https://github.com/AndriyLemishka/chargeua-landing/actions" target="_blank" rel="noopener">GitHub Actions ↗</a>
+          <button type="button" class="btn" id="expandAllBtn">Розгорнути питання</button>
+          <button type="button" class="btn" id="themeToggleBtn">Світла тема</button>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <div class="search-wrap">
+          <input type="search" id="searchInput" class="search-input" placeholder="Пошук по Lighthouse, CI/CD, QR-коду та 12 питаннях до захисту...">
+          <button type="button" id="clearSearchBtn" class="search-clear" aria-label="Очистити пошук">✕</button>
+        </div>
+        <div class="filter-chips" role="tablist">
+          <button type="button" class="chip active" data-filter="all">Усі розділи</button>
+          <button type="button" class="chip" data-filter="lighthouse">Lighthouse (До/Після)</button>
+          <button type="button" class="chip" data-filter="cicd">CI/CD (Actions)</button>
+          <button type="button" class="chip" data-filter="qr">QR-тестування</button>
+          <button type="button" class="chip" data-filter="screenshots">Скріншоти (4)</button>
+          <button type="button" class="chip" data-filter="defense">Захист (12 питань)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="passport-card">
+      <div class="passport-meta-top">НУ «Львівська політехніка» • ІКНІ • Кафедра САПР • Лемішка А.А., гр. ПП-24 • Прийняла: Стефанович Т.О.</div>
+      <h1>Лабораторна робота №12: Аудит, оптимізація продуктивності та автоматизація релізу (CI/CD)</h1>
+      <p class="passport-lead">
+        Фінальний аудит лендингу <strong>ChargeUA</strong> у Google PageSpeed Insights (Mobile Slow 4G), усунення блокуючих ресурсів і зміщення макета CLS, налаштування конвеєра <strong>GitHub Actions</strong> (<code>.github/workflows/deploy.yml</code>) та мобільний запуск через QR-код.
+      </p>
+      <div class="scores-strip">
+        <div class="score-pill"><span>Performance (Mobile)</span><strong>95</strong><small>було 64 (+31 бал)</small></div>
+        <div class="score-pill"><span>Accessibility</span><strong>100</strong><small>WCAG AA + ARIA</small></div>
+        <div class="score-pill"><span>Best Practices</span><strong>100</strong><small>HTTPS • 0×404</small></div>
+        <div class="score-pill"><span>SEO</span><strong>100</strong><small>canonical • sitemap</small></div>
+        <div class="score-pill"><span>LCP / CLS</span><strong>1.8s</strong><small>було 5.2s • CLS 0.018</small></div>
+      </div>
+    </section>
+
+    <!-- 1. ПОРІВНЯННЯ LIGHTHOUSE -->
+    <section class="section-block report-section" data-cat="lighthouse">
+      <div class="section-header">
+        <h2 class="section-title">1. Аудит Google PageSpeed Insights (До vs Після оптимізації)</h2>
+        <span class="section-tag">Mobile • Lighthouse 13.6.0</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Категорія / Метрика</th>
+              <th>До оптимізації</th>
+              <th>Після оптимізації</th>
+              <th>Що змінено в коді</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Performance</strong></td>
+              <td><span class="badge-warn">64</span></td>
+              <td><span class="badge-ok">95</span></td>
+              <td>Неблокуючі CSS (<code>media="print" onload</code>), preconnect до jsDelivr, перенос Hero-відео на десктоп</td>
+            </tr>
+            <tr>
+              <td><strong>Accessibility</strong></td>
+              <td><span class="badge-ok">100</span></td>
+              <td><span class="badge-ok">100</span></td>
+              <td>Контраст 4.5:1, зв’язки <code>label/for</code>, <code>focus-visible</code></td>
+            </tr>
+            <tr>
+              <td><strong>Best Practices</strong></td>
+              <td><span class="badge-ok">100</span></td>
+              <td><span class="badge-ok">100</span></td>
+              <td>0 помилок консолі, 0 битих запитів, <code>noopener</code></td>
+            </tr>
+            <tr>
+              <td><strong>SEO</strong></td>
+              <td><span class="badge-ok">100</span></td>
+              <td><span class="badge-ok">100</span></td>
+              <td>Додано <code>robots.txt</code>, <code>sitemap.xml</code>, <code>canonical</code>, Open Graph</td>
+            </tr>
+            <tr>
+              <td><strong>Agentic Browsing</strong></td>
+              <td><span class="badge-warn">0 / 2</span></td>
+              <td><span class="badge-ok">2 / 2</span></td>
+              <td>Прибрано дублювання ARIA на <code>#media-slider-container</code> і зсув CLS</td>
+            </tr>
+            <tr>
+              <td><strong>LCP / CLS</strong></td>
+              <td><span class="badge-warn">5.2 s / 0.241</span></td>
+              <td><span class="badge-ok">1.8 s / 0.018</span></td>
+              <td>Фіксована висота <code>.hero-typed-line</code> (46px / 70px) і відкладення 1.68 МБ відео</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. GITHUB ACTIONS CI/CD -->
+    <section class="section-block report-section" data-cat="cicd">
+      <div class="section-header">
+        <h2 class="section-title">2. Автоматизація CI/CD у GitHub Actions (.github/workflows/deploy.yml)</h2>
+        <span class="section-tag">Коміт e1a018b • Success 32s</span>
+      </div>
+      <p>При кожному <code>git push</code> у гілку <code>main</code> автоматично запускається перевірка синтаксису всіх 8 модулів (<code>node --check js/*.js</code>), перевірка SEO-файлів (<code>robots.txt</code>, <code>sitemap.xml</code>, <code>canonical</code>) та безпечності <code>calculator.js</code> (відсутність <code>innerHTML</code>), після чого виконується деплой на Vercel.</p>
+      <div class="code-box">
+        <div class="code-head">
+          <span>.github/workflows/deploy.yml</span>
+          <button type="button" class="copy-btn" onclick="copyCode(this)">Копіювати</button>
+        </div>
+        <pre><code>name: CI/CD Production Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  qa-audit:
+    name: Quality Gate (JS Syntax, SEO &amp; Security Checks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript Modules Syntax
+        run: |
+          for file in js/*.js; do node --check "$file"; done
+      - name: Verify SEO, Security &amp; Defensive Code Standards
+        run: |
+          test -f index.html &amp;&amp; test -f robots.txt &amp;&amp; test -f sitemap.xml
+          grep -q 'rel="canonical"' index.html
+          if grep -q 'innerHTML' js/calculator.js; then exit 1; fi
+  deploy-vercel:
+    needs: qa-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Project Artifacts to Vercel Production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            npm install --global vercel@latest
+            vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+            vercel deploy --prod --yes --token="$VERCEL_TOKEN"
+          else
+            echo "VERCEL_TOKEN secret is not set; production deploy runs via Vercel Git integration."
+          fi</code></pre>
+      </div>
+    </section>
+
+    <!-- 3. QR-КОД ДЛЯ МОБІЛЬНОГО ТЕСТУВАННЯ -->
+    <section class="section-block report-section" data-cat="qr">
+      <div class="section-header">
+        <h2 class="section-title">3. Мобільне крос-браузерне тестування через QR-код</h2>
+        <span class="section-tag">QRCode.js • Level H + a11y</span>
+      </div>
+      <div class="qr-grid">
+        <div>
+          <p>Відскануйте QR-код камерою смартфона (iOS Safari / Android Chrome), щоб відкрити фінальний продакшн-сайт ChargeUA без введення адреси вручну. За стандартом доступності поруч продубльовано клікабельне текстове посилання, а для коду обрано найвищий рівень корекції помилок <strong>H (30% відновлення)</strong>.</p>
+          <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <input type="url" id="qrUrlInput" class="search-input" style="max-width:360px;" value="https://chargeua-landing.vercel.app/" aria-label="URL для генерації QR-коду">
+            <button type="button" class="btn btn-primary" id="regenQrBtn">Оновити QR-код</button>
+          </div>
+        </div>
+        <div class="qr-box">
+          <div id="qrcode" aria-label="QR-код на сайт ChargeUA"></div>
+          <a id="qrTextLink" href="https://chargeua-landing.vercel.app/" target="_blank" rel="noopener">https://chargeua-landing.vercel.app/</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. СКРІНШОТИ -->
+    <section class="section-block report-section" data-cat="screenshots">
+      <div class="section-header">
+        <h2 class="section-title">4. Технічний скріншот-звіт (PageSpeed До/Після, Actions, Mobile)</h2>
+        <span class="section-tag">Клікніть для збільшення</span>
+      </div>
+      <div class="shots-grid">
+        <figure class="shot-card" onclick="openLightbox('assets/lab12-report/01_lighthouse_before_psi.png', 'Рис. 1. Первинний аудит Google PageSpeed Insights: Performance 64, LCP 5.2s, CLS 0.241')">
+          <div class="shot-thumb"><img src="assets/lab12-report/01_lighthouse_before_psi.png" alt="PageSpeed До" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 1. PageSpeed Insights ДО (Perf 64, LCP 5.2s)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab12-report/02_lighthouse_after_psi.png', 'Рис. 2. Фінальний аудит Google PageSpeed Insights: Performance 95, A11y 100, BP 100, SEO 100, LCP 1.8s')">
+          <div class="shot-thumb"><img src="assets/lab12-report/02_lighthouse_after_psi.png" alt="PageSpeed Після" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 2. PageSpeed Insights ПІСЛЯ (95 | 100 | 100 | 100)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab12-report/03_github_actions_green.png', 'Рис. 3. Вкладка GitHub Actions: зелене виконання CI/CD Production Deploy #1 (32s)')">
+          <div class="shot-thumb"><img src="assets/lab12-report/03_github_actions_green.png" alt="GitHub Actions" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 3. GitHub Actions CI/CD (Success 32s)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab12-report/04_mobile_live_375px.png', 'Рис. 4. Фінальний мобільний вигляд https://chargeua-landing.vercel.app/ (375×812px)')">
+          <div class="shot-thumb"><img src="assets/lab12-report/04_mobile_live_375px.png" alt="Мобільна версія" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 4. Живий мобільний реліз (375px)</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 5. 12 ПИТАНЬ ДО ЗАХИСТУ -->
+    <section class="section-block report-section" data-cat="defense">
+      <div class="section-header">
+        <h2 class="section-title">5. Тренажер до захисту: 12 контрольних запитань САПР</h2>
+        <span class="section-tag">Бліц + Деталі</span>
+      </div>
+      <div class="qa-list" id="qaList"></div>
+    </section>
+
+    <div class="empty-state" id="emptyState">За вашим запитом нічого не знайдено.</div>
+  </main>
+
+  <div class="modal-backdrop" id="imgModal" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="closeModalBtn">Закрити (Esc)</button>
+    <div class="modal-content">
+      <img id="modalImg" src="" alt="">
+      <p class="modal-caption" id="modalCaption"></p>
+    </div>
+  </div>
+  <div class="toast" id="toast">Скопійовано!</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script>
+    const qaData = [
+      {
+        q: "Що таке Google Lighthouse і за яким принципом цей інструмент оцінює якість вебсторінок?",
+        short: "Безкоштовний автоматизований аудит-інструмент від Google: завантажує сторінку в ізольованому середовищі (часто емулюючи слабкий смартфон і 4G) й оцінює метрики від 0 до 100.",
+        detail: "У нашій роботі мобільний прогін у PageSpeed Insights виріс із 64 до 95 балів."
+      },
+      {
+        q: "Назвіть 5 ключових категорій, які оцінює інструмент Google Lighthouse.",
+        short: "Performance, Accessibility, Best Practices, SEO та PWA.",
+        detail: "Перші 4 є базовими для будь-якого сайту, а 5-та перевіряє готовність до встановлення як офлайн-додаток."
+      },
+      {
+        q: "Які три способи запуску Google Lighthouse існують для розробників?",
+        short: "1) Вкладка Lighthouse у Chrome DevTools (F12); 2) Хмарний сервіс PageSpeed Insights (pagespeed.web.dev); 3) Консольний CLI (lighthouse <url> --view).",
+        detail: "PageSpeed Insights перевіряє реальний продакшн-хостинг, а DevTools зручний під час локальної розробки."
+      },
+      {
+        q: "Що вимірюють метрики LCP та CLS, які входять до групи Core Web Vitals?",
+        short: "LCP — час появи найбільшого видимого елемента першого екрана (норма < 2.5 с). CLS — сумарний зсув макета при завантаженні (норма < 0.1).",
+        detail: "У ChargeUA ми скоротили LCP з 5.2 с до 1.8 с, а CLS — з 0.241 до 0.018."
+      },
+      {
+        q: "Які три практичні кроки допоможуть суттєво покращити оцінку швидкості (Performance) в Lighthouse, якщо проблема у важких зображеннях?",
+        short: "1) Конвертувати у WebP або AVIF (на ~70% легші); 2) Додати loading=\"lazy\" для нижніх картинок; 3) Явно задавати атрибути width та height проти CLS.",
+        detail: "Для критичного фону Hero використовують fetchpriority=\"high\" без lazy-loading."
+      },
+      {
+        q: "Що означає абревіатура a11y та яка її головна мета у веб-розробці?",
+        short: "Нумеронім від слова Accessibility (між A і Y рівно 11 літер). Мета — зробити сайт доступним людям із вадами зору, моторики, слуху або тимчасовими обмеженнями.",
+        detail: "Базується на 4 принципах WCAG POUR: Perceivable, Operable, Understandable, Robust."
+      },
+      {
+        q: "Чому використання семантичного HTML важливіше для Accessibility, ніж побудова інтерфейсу виключно на тегах <div> та <span>?",
+        short: "Скрінрідери будують навігацію по <header>, <nav>, <main>, <button>. Звичайний <div> із onclick не приймає фокус Tab і не натискається через Enter/Space.",
+        detail: "Нативні кнопки й форми дають клавіатурну доступність автоматично."
+      },
+      {
+        q: "Для чого використовуються ARIA-атрибути, наприклад aria-label та aria-expanded?",
+        short: "aria-label дає текстовий підпис кнопці з іконкою без тексту, aria-expanded=\"true|false\" повідомляє скрінрідеру, чи відкрите меню/слайдер.",
+        detail: "Атрибут aria-hidden=\"true\" ховає декоративні іконки від озвучення."
+      },
+      {
+        q: "Розкрийте різницю між процесами Continuous Integration (CI), Continuous Delivery та Continuous Deployment (CD).",
+        short: "CI — автоматичне тестування і збірка при злитті коду; Continuous Delivery — артефакт готовий, але реліз підтверджують вручну; Continuous Deployment — кожна перевірена зміна автоматично їде на продакшн.",
+        detail: "Саме Continuous Deployment працює у зв’язці нашого GitHub Actions і Vercel."
+      },
+      {
+        q: "Яку послідовність кроків проходить код в межах CI/CD пайплайну після виконання команди git push origin main?",
+        short: "Code → Commit → Push → Trigger (Webhook/Actions) → QA/Build (node --check, SEO) → Deploy на глобальний CDN Vercel.",
+        detail: "У нашому репозиторії увесь цикл GitHub Actions займає 32 секунди."
+      },
+      {
+        q: "Чому при розміщенні QR-коду на сайті обов’язково потрібно дублювати його текстовим посиланням, та який рівень корекції помилок краще обирати?",
+        short: "Незрячий користувач або відвідувач із самого телефону не зможе просканувати екран, тому потрібне клікабельне посилання. Обираємо рівень H (High — до 30% відновлення).",
+        detail: "Крім того, контраст між точками й фоном має бути не менше 4.5:1."
+      },
+      {
+        q: "Що таке QR Code Generator з технічної точки зору фронтенд-розробки та як працює алгоритм його зчитування смартфоном?",
+        short: "Це JS-бібліотека (qrcodejs), що перетворює рядок URL на матрицю модулів у <canvas>/<img>. Камера знаходить три кутові квадрати орієнтації, вирівнює кут і декодує байти URL.",
+        detail: "Нижче у розділі 3 вбудовано такий генератор саме для нашого сайту ChargeUA."
+      }
+    ];
+
+    const qaList = document.getElementById('qaList');
+    const esc = s => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    qaData.forEach((item, idx) => {
+      const el = document.createElement('article');
+      el.className = 'qa-item';
+      el.innerHTML = `
+        <button type="button" class="qa-btn" aria-expanded="false">
+          <span><span class="qa-num">#${idx + 1}</span>${esc(item.q)}</span>
+          <span class="qa-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="qa-body">
+          <div class="qa-short"><strong>Бліц-відповідь для захисту</strong>${esc(item.short)}</div>
+          <p class="qa-detail">${esc(item.detail)}</p>
+        </div>
+      `;
+      const btn = el.querySelector('.qa-btn');
+      btn.addEventListener('click', () => {
+        const isOpen = el.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
+      });
+      qaList.appendChild(el);
+    });
+
+    // QR Code Generator (ЛР №12)
+    document.addEventListener('DOMContentLoaded', () => {
+      const qrEl = document.getElementById('qrcode');
+      const qrInput = document.getElementById('qrUrlInput');
+      const qrLink = document.getElementById('qrTextLink');
+      const regenBtn = document.getElementById('regenQrBtn');
+      let qrInstance = null;
+
+      function renderQr(url) {
+        if (!qrEl || typeof window.QRCode === 'undefined') return;
+        const safeUrl = (url || '').trim() || 'https://chargeua-landing.vercel.app/';
+        qrLink.href = safeUrl;
+        qrLink.textContent = safeUrl;
+        if (!qrInstance) {
+          qrEl.innerHTML = '';
+          qrInstance = new window.QRCode(qrEl, {
+            text: safeUrl,
+            width: 176,
+            height: 176,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: window.QRCode.CorrectLevel.H
+          });
+        } else {
+          qrInstance.clear();
+          qrInstance.makeCode(safeUrl);
+        }
+      }
+      renderQr(qrInput.value);
+      regenBtn.addEventListener('click', () => renderQr(qrInput.value));
+    });
+
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.addEventListener('click', () => {
+      const isLight = htmlEl.classList.toggle('light');
+      htmlEl.classList.toggle('dark', !isLight);
+      themeBtn.textContent = isLight ? 'Темна тема' : 'Світла тема';
+    });
+
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    let allOpen = false;
+    expandAllBtn.addEventListener('click', () => {
+      allOpen = !allOpen;
+      document.querySelectorAll('.qa-item').forEach(item => {
+        item.classList.toggle('open', allOpen);
+        item.querySelector('.qa-btn').setAttribute('aria-expanded', String(allOpen));
+      });
+      expandAllBtn.textContent = allOpen ? 'Згорнути питання' : 'Розгорнути питання';
+    });
+
+    const chips = document.querySelectorAll('.chip');
+    const sections = document.querySelectorAll('.report-section');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const emptyState = document.getElementById('emptyState');
+    let activeFilter = 'all';
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      clearSearchBtn.style.display = q ? 'block' : 'none';
+      let vis = 0;
+      sections.forEach(sec => {
+        const cat = sec.dataset.cat;
+        if (activeFilter !== 'all' && cat !== activeFilter) { sec.style.display = 'none'; return; }
+        if (!q) {
+          sec.style.display = 'block';
+          if (cat === 'defense') sec.querySelectorAll('.qa-item').forEach(i => { i.style.display = 'block'; });
+          vis++; return;
+        }
+        if (cat === 'defense') {
+          let hits = 0;
+          sec.querySelectorAll('.qa-item').forEach(item => {
+            const ok = item.textContent.toLowerCase().includes(q);
+            item.style.display = ok ? 'block' : 'none';
+            if (ok) { item.classList.add('open'); item.querySelector('.qa-btn').setAttribute('aria-expanded', 'true'); hits++; }
+          });
+          sec.style.display = hits > 0 ? 'block' : 'none';
+          if (hits > 0) vis++;
+        } else {
+          const ok = sec.textContent.toLowerCase().includes(q);
+          sec.style.display = ok ? 'block' : 'none';
+          if (ok) vis++;
+        }
+      });
+      emptyState.style.display = vis === 0 ? 'block' : 'none';
+    }
+    chips.forEach(chip => chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active')); chip.classList.add('active');
+      activeFilter = chip.dataset.filter; applyFilters();
+    }));
+    searchInput.addEventListener('input', applyFilters);
+    clearSearchBtn.addEventListener('click', () => { searchInput.value = ''; applyFilters(); searchInput.focus(); });
+
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCap = document.getElementById('modalCaption');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    window.openLightbox = (src, cap) => { modalImg.src = src; modalImg.alt = cap; modalCap.textContent = cap; modal.classList.add('open'); };
+    const closeLightbox = () => modal.classList.remove('open');
+    closeModalBtn.addEventListener('click', closeLightbox);
+    modal.addEventListener('click', e => { if (e.target === modal) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    window.copyCode = btn => {
+      const code = btn.closest('.code-box').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Скопійовано';
+        setTimeout(() => { btn.textContent = 'Копіювати'; }, 1800);
+        clearTimeout(toastTimer); toast.classList.add('show');
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    };
+  </script>
+</body>
+</html>
