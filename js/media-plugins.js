@@ -1,6 +1,6 @@
 /**
  * Модуль інтеграції зовнішніх Vanilla JS медіабібліотек (ЛР №10)
- * Підключені через CDN: Swiper.js v11, Fancybox v5, Typed.js v2.0.12
+ * та оптимізації завантаження фонового відео (ЛР №12)
  */
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Typed.js — динамічний ефект друкування переваг у Hero-секції
@@ -89,4 +89,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+});
+
+// 4. Оптимізація LCP (ЛР №12): фонове відео в Hero завантажується лише на десктопі після першого рендера
+window.addEventListener('load', () => {
+  if (window.innerWidth < 1024) return;
+  const videoEl = document.getElementById('hero-bg-video');
+  const imgEl = document.getElementById('hero-bg-img');
+  if (!videoEl || !videoEl.dataset.src) return;
+  setTimeout(() => {
+    videoEl.src = videoEl.dataset.src;
+    videoEl.addEventListener('canplay', () => {
+      videoEl.style.display = 'block';
+      videoEl.classList.remove('hidden');
+      if (imgEl) imgEl.style.display = 'none';
+      videoEl.play().catch(() => {});
+    }, { once: true });
+    videoEl.load();
+  }, 800);
 });

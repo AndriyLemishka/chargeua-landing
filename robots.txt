@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chargeua-landing.vercel.app/sitemap.xml

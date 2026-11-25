@@ -25,19 +25,21 @@
   </script>
 <title>ChargeUA — мережа зарядних станцій електромобілів в Україні</title>
   <link rel="icon" type="image/svg+xml" href="assets/images/Logo.svg">
+  <link rel="canonical" href="https://chargeua-landing.vercel.app/">
   <meta name="description" content="ChargeUA — єдина мережа швидкісних зарядних станцій для електромобілів по всій Україні: DC 150 кВт, Ultra-fast, інтерактивний калькулятор витрат, Live-карта 480+ станцій та робота від генераторів у блекаути.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ChargeUA — мережа зарядних станцій електромобілів в Україні">
+  <meta property="og:description" content="Live-карта 480+ станцій, калькулятор зарядки, нічний тариф Green Night та робота від генераторів у блекаути.">
+  <meta property="og:url" content="https://chargeua-landing.vercel.app/">
   <meta name="theme-color" content="#005EC9">
 
-  <!-- Підключення зовнішніх стилів CSS (критичні стилі макета та скомпільований Tailwind) -->
-  <!-- Оптимізоване неблокуюче завантаження CSS для високої продуктивності Lighthouse -->
-    <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/tailwind.min.css">
+  <!-- Підключення зовнішніх стилів CSS (критичні стилі макета + неблокуючий Tailwind) -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tailwind.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="css/tailwind.min.css"></noscript>
 
-  <!-- Прелоад критичного фонового зображення для максимального LCP -->
-  <link rel="preload" as="image" href="assets/images/hero_bg.webp" fetchpriority="high" type="image/webp">
-
-
-  <!-- Шрифт Inter (Google Fonts) з оптимізованим display=swap -->
+  <!-- Preconnect для CDN бібліотек і шрифтів -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap&amp;subset=cyrillic" media="print" onload="this.media='all'">
@@ -312,9 +314,11 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
 
-  <!-- Стилі зовнішніх Vanilla JS медіабібліотек через CDN (ЛР №10: Swiper.js v11, Fancybox v5) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css">
+  <!-- Стилі зовнішніх Vanilla JS медіабібліотек через CDN (ЛР №10/12: неблокуюче завантаження) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"></noscript>
 
   <!-- Додаткові стилі для ЛР №7: відео у правому крилі Hero, Webflow-style центрований слайдер YouTube та білий віджет тарифів -->
   <style>
@@ -688,21 +692,28 @@
     .hero-typed-line {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
-      min-height: 28px;
+      height: 46px;
+      overflow: hidden;
       margin-bottom: 20px;
-      font-size: 14.5px;
-      line-height: 1.5;
+      font-size: 14px;
+      line-height: 1.4;
       color: #334155;
       background: rgba(241, 245, 249, 0.85);
       border: 1px solid #E2E8F0;
       border-radius: 12px;
       padding: 8px 14px;
     }
+    .hero-typed-line > span:nth-child(2) {
+      flex-shrink: 0;
+    }
     .hero-typed-accent {
       color: #005EC9;
       font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .typed-cursor {
       color: #005EC9;
@@ -710,11 +721,18 @@
       margin-left: 1px;
     }
     @media (max-width: 768px) {
+      .hero-video-right-wrap {
+        display: none !important;
+      }
       .hero-typed-line {
         justify-content: center;
+        flex-wrap: wrap;
         font-size: 12.5px;
-        min-height: 44px;
+        height: 70px;
         padding: 8px 10px;
+      }
+      .hero-typed-accent {
+        white-space: normal;
       }
     }
 
@@ -1120,11 +1138,10 @@
 
     <!-- HERO СЕКЦІЯ (СТАТИЧНИЙ ФОН З МАКЕТА FIGMA) -->
     <section class="hero-sec" aria-labelledby="hero-title">
-      <!-- ВІДЕО В ПРАВОМУ КРИЛІ HERO ЗАМІСТЬ СТАТИЧНОГО ЗОБРАЖЕННЯ З ПЛАВНИМ ГРАДІЄНТОМ -->
+      <!-- ВІДЕО В ПРАВОМУ КРИЛІ HERO (ЛІНИВЕ ЗАВАНТАЖЕННЯ НА ДЕСКТОПІ ДЛЯ LCP 90+ НА МОБІЛЬНОМУ) -->
       <div class="hero-video-right-wrap" aria-hidden="true">
-        <video autoplay loop muted playsinline preload="none" poster="assets/images/hero_bg.webp" class="hero-video-right">
-          <source src="assets/video/video_content.mp4" type="video/mp4">
-        </video>
+        <img src="assets/images/hero_bg.webp" alt="" width="1376" height="768" decoding="async" class="hero-video-right" id="hero-bg-img">
+        <video loop muted playsinline preload="none" data-src="assets/video/video_content.mp4" class="hero-video-right hidden" id="hero-bg-video" style="display:none;"></video>
         <div class="hero-video-fade"></div>
       </div>
       <div class="container hero-container">
@@ -1668,11 +1685,11 @@
           </button>
 
           <!-- Віконце перегляду слайдера -->
-          <div id="media-slider-container" role="region" aria-roledescription="carousel" aria-label="Відеоінструкції ChargeUA" class="media-slider-viewport focus:outline-none" tabindex="0" aria-roledescription="carousel" aria-label="Слайдер навчальних відео ChargeUA">
+          <div id="media-slider-container" role="region" aria-roledescription="carousel" aria-label="Слайдер навчальних відео ChargeUA" class="media-slider-viewport focus:outline-none" tabindex="0">
             <div id="media-slider-track" class="media-slider-track">
               
               <!-- Слайд 1: UKl8LsYw050 -->
-              <article class="media-slide" role="group" aria-label="1 з 3: Як зарядити електромобіль" aria-hidden="true">
+              <article class="media-slide" aria-label="1 з 3: Як зарядити електромобіль" aria-hidden="true">
                 <div class="bg-white rounded-3xl border border-slate-200 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div class="aspect-video-box relative yt-facade cursor-pointer" data-yt-id="UKl8LsYw050" data-yt-title="ChargeUA — Як зарядити електромобіль? Повна інструкція для новачків" style="background: url('assets/images/yt_thumb_1.jpg') center/cover no-repeat;" tabindex="-1" role="button" aria-label="Відтворити відео: Як зарядити електромобіль?">
                     <div class="yt-play-btn" aria-hidden="true"></div>
@@ -1686,7 +1703,7 @@
               </article>
 
               <!-- Слайд 2: 49CXt_OXZvE -->
-              <article class="media-slide is-active" role="group" aria-label="2 з 3: EV Charging 101" aria-hidden="false">
+              <article class="media-slide is-active" aria-label="2 з 3: EV Charging 101" aria-hidden="false">
                 <div class="bg-white rounded-3xl border border-slate-200 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div class="aspect-video-box relative yt-facade cursor-pointer" data-yt-id="49CXt_OXZvE" data-yt-title="ChargeUA — EV Charging 101: Everything You Need to Know!" style="background: url('assets/images/yt_thumb_2.jpg') center/cover no-repeat;" tabindex="0" role="button" aria-label="Відтворити відео: EV Charging 101">
                     <div class="yt-play-btn" aria-hidden="true"></div>
@@ -1700,7 +1717,7 @@
               </article>
 
               <!-- Слайд 3: fd8qnycDvoE -->
-              <article class="media-slide" role="group"  aria-label="3 з 3: Welcome to EV Charging" aria-hidden="true">
+              <article class="media-slide" aria-label="3 з 3: Welcome to EV Charging" aria-hidden="true">
                 <div class="bg-white rounded-3xl border border-slate-200 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
                   <div class="aspect-video-box relative yt-facade cursor-pointer" data-yt-id="fd8qnycDvoE" data-yt-title="ChargeUA — Welcome to EV Charging: A Beginner's Guide" style="background: url('assets/images/yt_thumb_3.jpg') center/cover no-repeat;" tabindex="-1" role="button" aria-label="Відтворити відео: Welcome to EV Charging">
                     <div class="yt-play-btn" aria-hidden="true"></div>
