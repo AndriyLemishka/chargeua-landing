@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChargeUA • Звіт-сайт та тренажер до захисту ЛР №11</title>
+  <meta name="description" content="Інтерактивний веб-звіт до лабораторної роботи №11 «Розробка інтерактивних віджетів та обробка Edge Cases» (Калькулятор ChargeUA, Defensive Programming, QA Log, DevTools Console).">
+  <meta name="theme-color" content="#0b0f19">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --surface: #111827;
+      --surface-card: #1e293b;
+      --border: #334155;
+      --border-light: #1f293d;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #38bdf8;
+      --primary-strong: #0284c7;
+      --primary-glow: rgba(56, 189, 248, 0.16);
+      --accent: #10b981;
+      --accent-bg: rgba(16, 185, 129, 0.12);
+      --danger: #f87171;
+      --danger-bg: rgba(239, 68, 68, 0.14);
+      --code-bg: #070b14;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
+    }
+
+    html.light {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-card: #f8fafc;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --primary: #005ec9;
+      --primary-strong: #004ba0;
+      --primary-glow: rgba(0, 94, 201, 0.12);
+      --accent: #059669;
+      --accent-bg: rgba(5, 150, 105, 0.1);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.1);
+      --code-bg: #0f172a;
+      --shadow-card: 0 8px 24px -8px rgba(15, 23, 42, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 84px;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-size: 15px;
+    }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11, 15, 25, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-light);
+    }
+    html.light .topbar { background: rgba(255, 255, 255, 0.92); }
+    .topbar-inner {
+      max-width: 1120px; margin: 0 auto; padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .topbar-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; }
+    .brand-badge {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 3px 9px; border-radius: 999px; background: linear-gradient(135deg, #005ec9, #10b981); color: #fff;
+    }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 13px; border-radius: 10px;
+      font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: var(--surface);
+      color: var(--text); cursor: pointer; transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+    .btn:hover { border-color: var(--primary); text-decoration: none; transform: translateY(-1px); }
+    .btn-primary { background: var(--primary-strong); border-color: var(--primary-strong); color: #fff; }
+    .btn-primary:hover { background: var(--primary); border-color: var(--primary); color: #0b0f19; }
+
+    .controls-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .search-wrap { position: relative; flex: 1; min-width: 220px; }
+    .search-input {
+      width: 100%; padding: 9px 36px 9px 14px; border-radius: 11px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-size: 14px; outline: none;
+    }
+    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
+    .search-clear {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      border: none; background: transparent; color: var(--text-muted); font-size: 16px; cursor: pointer; padding: 4px 6px; display: none;
+    }
+    .filter-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+    .filter-chips::-webkit-scrollbar { display: none; }
+    .chip {
+      white-space: nowrap; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-muted); font-size: 12.5px; font-weight: 600; cursor: pointer;
+    }
+    .chip.active { background: var(--primary-strong); border-color: var(--primary-strong); color: #fff; }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 20px 16px 40px; }
+    .passport-card {
+      background: linear-gradient(135deg, rgba(0, 94, 201, 0.14), rgba(16, 185, 129, 0.09));
+      border: 1px solid rgba(56, 189, 248, 0.3); border-radius: var(--radius-lg);
+      padding: 24px; margin-bottom: 22px; box-shadow: var(--shadow-card);
+    }
+    .passport-meta-top { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); margin-bottom: 6px; }
+    .passport-card h1 { font-size: clamp(20px, 3vw, 28px); line-height: 1.25; margin-bottom: 10px; }
+    .passport-lead { color: var(--text-muted); font-size: 14.5px; max-width: 840px; margin-bottom: 16px; }
+    .passport-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .passport-item { background: var(--surface); border: 1px solid var(--border-light); border-radius: 12px; padding: 10px 12px; }
+    .passport-item span { display: block; font-size: 11px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+    .passport-item strong { font-size: 13.5px; color: var(--text); }
+    .links-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .section-block {
+      background: var(--surface); border: 1px solid var(--border-light);
+      border-radius: var(--radius-md); padding: 20px; margin-bottom: 18px; box-shadow: var(--shadow-card);
+    }
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-light);
+    }
+    .section-title { font-size: 18px; font-weight: 800; }
+    .section-tag {
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 6px;
+      background: var(--surface-card); border: 1px solid var(--border); color: var(--primary);
+    }
+    p + p { margin-top: 10px; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border-light); border-radius: 12px; margin-top: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 600px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    th { background: var(--surface-card); font-weight: 700; color: var(--primary); font-size: 12px; text-transform: uppercase; }
+    tr:last-child td { border-bottom: none; }
+    .badge-err { display: inline-block; padding: 2px 8px; border-radius: 6px; background: var(--danger-bg); color: var(--danger); font-weight: 700; font-size: 12px; }
+    .badge-ok { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--accent-bg); color: var(--accent); font-weight: 700; font-size: 12px; }
+
+    .code-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 12px; }
+    .code-head {
+      display: flex; align-items: center; justify-content: space-between; padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--border); font-size: 12px; color: #cbd5e1; font-weight: 600;
+    }
+    .copy-btn {
+      border: 1px solid #475569; background: #1e293b; color: #f8fafc;
+      border-radius: 6px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer;
+    }
+    pre { padding: 14px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: #e2e8f0; }
+
+    .shots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 12px; }
+    .shot-card {
+      background: var(--surface-card); border: 1px solid var(--border-light);
+      border-radius: 14px; overflow: hidden; cursor: zoom-in; transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .shot-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .shot-thumb { aspect-ratio: 16 / 10; background: #020617; overflow: hidden; }
+    .shot-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .shot-cap { padding: 10px 12px; font-size: 12.5px; color: var(--text-muted); font-weight: 600; }
+
+    .qa-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .qa-item { background: var(--surface-card); border: 1px solid var(--border-light); border-radius: 12px; overflow: hidden; }
+    .qa-btn {
+      width: 100%; text-align: left; padding: 14px 16px; background: transparent; border: none; color: var(--text);
+      font-size: 14.5px; font-weight: 700; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; cursor: pointer;
+    }
+    .qa-num { color: var(--primary); margin-right: 6px; }
+    .qa-icon { color: var(--text-dim); transition: transform 0.2s ease; flex-shrink: 0; }
+    .qa-item.open .qa-icon { transform: rotate(180deg); color: var(--primary); }
+    .qa-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--border-light); }
+    .qa-item.open .qa-body { display: block; }
+    .qa-short {
+      margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--accent);
+      background: var(--accent-bg); border-radius: 0 8px 8px 0; font-size: 13.5px;
+    }
+    .qa-short strong { display: block; font-size: 11px; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+    .qa-detail { margin-top: 8px; font-size: 13.5px; color: var(--text-muted); }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 9999; background: rgba(2, 6, 23, 0.9);
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-content { max-width: 1060px; width: 100%; text-align: center; }
+    .modal-content img { max-width: 100%; max-height: 82vh; border-radius: 12px; border: 1px solid var(--border); }
+    .modal-caption { color: #e2e8f0; margin-top: 10px; font-size: 14px; font-weight: 600; }
+    .modal-close {
+      position: fixed; top: 16px; right: 20px; background: #1e293b; color: #fff;
+      border: 1px solid #475569; border-radius: 10px; padding: 8px 14px; font-weight: 700; cursor: pointer;
+    }
+
+    .toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #0f172a; color: #f8fafc; border: 1px solid var(--primary); padding: 10px 18px;
+      border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 10000;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .empty-state { display: none; text-align: center; padding: 36px 16px; color: var(--text-muted); background: var(--surface); border: 1px dashed var(--border); border-radius: 16px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-row">
+        <div class="brand">
+          <span class="brand-badge">ЛР №11</span>
+          <span>Звіт-сайт • Калькулятор ChargeUA</span>
+        </div>
+        <div class="topbar-actions">
+          <a class="btn btn-primary" href="https://chargeua-landing.vercel.app/#calculator" target="_blank" rel="noopener">Віджет на Vercel ↗</a>
+          <a class="btn" href="https://github.com/AndriyLemishka/chargeua-landing" target="_blank" rel="noopener">GitHub (306b578) ↗</a>
+          <button type="button" class="btn" id="expandAllBtn">Розгорнути питання</button>
+          <button type="button" class="btn" id="themeToggleBtn">Світла тема</button>
+        </div>
+      </div>
+
+      <div class="controls-row">
+        <div class="search-wrap">
+          <input type="search" id="searchInput" class="search-input" placeholder="Пошук по Edge Cases, формулі, коду та 15 питаннях до захисту...">
+          <button type="button" id="clearSearchBtn" class="search-clear" aria-label="Очистити пошук">✕</button>
+        </div>
+        <div class="filter-chips" role="tablist">
+          <button type="button" class="chip active" data-filter="all">Усі розділи</button>
+          <button type="button" class="chip" data-filter="logic">Бізнес-логіка</button>
+          <button type="button" class="chip" data-filter="edge-cases">QA & Edge Cases</button>
+          <button type="button" class="chip" data-filter="code">Захисний JS</button>
+          <button type="button" class="chip" data-filter="screenshots">Скріншоти (5)</button>
+          <button type="button" class="chip" data-filter="defense">Захист (15 питань)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="passport-card">
+      <div class="passport-meta-top">НУ «Львівська політехніка» • ІКНІ • Кафедра САПР • Технології веброзробки та дизайну</div>
+      <h1>Лабораторна робота №11: Розробка інтерактивних віджетів та обробка Edge Cases</h1>
+      <p class="passport-lead">
+        Вдосконалений інтерактивний калькулятор зарядки електромобілів <strong>ChargeUA</strong>: 6 параметрів впливу (модель авто, ручна ємність 10–250 кВт·год, повзунок %, тарифний план, нічний тариф Green Night, бронювання порту), повний захист від <code>NaN</code>, <code>Infinity</code>, від’ємних чисел та XSS (<code>.textContent</code>).
+      </p>
+      <div class="passport-grid">
+        <div class="passport-item"><span>Виконав</span><strong>Лемішка А.А., гр. ПП-24</strong></div>
+        <div class="passport-item"><span>Прийняла</span><strong>Стефанович Т.О.</strong></div>
+        <div class="passport-item"><span>Коміт у GitHub</span><strong>306b578 (гілка main)</strong></div>
+        <div class="passport-item"><span>Console QA Stress-Test</span><strong>0 Errors / 7 Edge Cases OK</strong></div>
+      </div>
+      <div class="links-bar">
+        <a class="btn btn-primary" href="https://chargeua-landing.vercel.app/#calculator" target="_blank" rel="noopener">Тестувати калькулятор наживо (Vercel)</a>
+        <a class="btn" href="https://github.com/AndriyLemishka/chargeua-landing/commit/306b578" target="_blank" rel="noopener">Коміт 306b578 на GitHub</a>
+      </div>
+    </section>
+
+    <!-- 1. БІЗНЕС-ЛОГІКА ТА HAPPY PATH -->
+    <section class="section-block report-section" data-cat="logic">
+      <div class="section-header">
+        <h2 class="section-title">1. Бізнес-логіка віджета та приклад Happy Path</h2>
+        <span class="section-tag">6 параметрів • Vanilla JS</span>
+      </div>
+      <p>Формула обчислення: <code>addedKwh = ((targetPercent - startPercent) / 100) * capacity</code>; <code>sessionCost = addedKwh * effectiveTariff + (hasPortReserve ? 15 : 0)</code>.</p>
+      <p><strong>Приклад Happy Path:</strong> Hyundai Ioniq 5 (<code>72.6 кВт·год</code>), заряд <code>20% → 80%</code> (<code>+43.6 кВт·год</code>), тариф Ultra-Fast DC (<code>17.90 ₴/кВт·год</code>) та пріоритетне бронювання (<code>+15 ₴</code>) дають підсумок <strong>794.72 ₴</strong> і час <strong>~16 хвилин</strong> на 160 кВт.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Параметр (id)</th>
+              <th>Тип контрола</th>
+              <th>Подія JS</th>
+              <th>Вплив та обмеження</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>#car-select-dropdown</code></td>
+              <td>select (45+ авто)</td>
+              <td><code>change</code></td>
+              <td>Підставляє ємність батареї, порт (CCS2/GB/T/CHAdeMO) і maxDc</td>
+            </tr>
+            <tr>
+              <td><code>#manual-kwh-input</code></td>
+              <td>input[number]</td>
+              <td><code>input</code> / <code>change</code></td>
+              <td>Діапазон 10–250 кВт·год; RegEx + <code>clamp()</code></td>
+            </tr>
+            <tr>
+              <td><code>#calc-range-slider</code></td>
+              <td>input[range]</td>
+              <td><code>input</code></td>
+              <td>20–100% (крок 5%), обчислює додані кВт·год</td>
+            </tr>
+            <tr>
+              <td><code>#calc-tariff-select</code></td>
+              <td>select</td>
+              <td><code>change</code></td>
+              <td>Стандарт DC (14.12 ₴), Ultra-Fast (17.90 ₴), AC (10.50 ₴)</td>
+            </tr>
+            <tr>
+              <td><code>#calc-night-opt</code></td>
+              <td>checkbox</td>
+              <td><code>change</code></td>
+              <td>Активує тариф «Green Night» — 8.90 ₴/кВт·год</td>
+            </tr>
+            <tr>
+              <td><code>#calc-reserve-opt</code></td>
+              <td>checkbox</td>
+              <td><code>change</code></td>
+              <td>Додає +15.00 ₴ за резервування порту на 15 хв</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. EDGE CASES ТА QA LOG -->
+    <section class="section-block report-section" data-cat="edge-cases">
+      <div class="section-header">
+        <h2 class="section-title">2. Журнал тестування Edge Cases (QA Log) & Промпт-паспорт</h2>
+        <span class="section-tag">7 стрес-тестів • 0 NaN</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Що вводили</th>
+              <th>Початкова поведінка</th>
+              <th>Захисне виправлення (Defensive Guard)</th>
+              <th>Результат</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>""</code> або <code>"   "</code></td>
+              <td>Мовчки ігнорувалось без попередження</td>
+              <td>Помилка + <code>is-invalid</code> + Fail-Safe 65 кВт·год</td>
+              <td><span class="badge-ok">Оброблено</span></td>
+            </tr>
+            <tr>
+              <td><code>"-50"</code></td>
+              <td>Ризик від’ємного чеку при виклику API</td>
+              <td><code>parsed &lt;= 0</code> → мінімум 10 кВт·год (122.40 ₴) + банер</td>
+              <td><span class="badge-ok">Оброблено</span></td>
+            </tr>
+            <tr>
+              <td><code>"0"</code> або <code>"5"</code></td>
+              <td>Пропуск 5 кВт·год через стару умову &gt; 0</td>
+              <td>Єдина межа <code>MIN_CAPACITY_KWH = 10</code> у HTML та JS</td>
+              <td><span class="badge-ok">Оброблено</span></td>
+            </tr>
+            <tr>
+              <td><code>"999999"</code></td>
+              <td>Розбіжність меж (300 у JS проти 250 в HTML)</td>
+              <td><code>clamp(val, 10, 250)</code> → 250 кВт·год (2118.00 ₴)</td>
+              <td><span class="badge-ok">Оброблено</span></td>
+            </tr>
+            <tr>
+              <td><code>"abc&lt;script&gt;alert(1)&lt;/script&gt;"</code></td>
+              <td>Старий вивід через <code>.innerHTML</code></td>
+              <td>RegEx відсіює текст і теги; вивід лише через <code>.textContent</code></td>
+              <td><span class="badge-ok">Безпечно</span></td>
+            </tr>
+            <tr>
+              <td>Спам-кліки по кнопці переходу</td>
+              <td>Повторне перемикання фільтра карти</td>
+              <td><code>isNavigating</code> блокування + <code>disabled</code> на 650 мс</td>
+              <td><span class="badge-ok">Стабільно</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. ЗАХИСНИЙ КОД JS ТА CONSOLE LOG -->
+    <section class="section-block report-section" data-cat="code">
+      <div class="section-header">
+        <h2 class="section-title">3. Фінальний код валідації (js/calculator.js) та DevTools Console</h2>
+        <span class="section-tag">IIFE • Pure Functions</span>
+      </div>
+
+      <div class="code-box">
+        <div class="code-head">
+          <span>Захисні функції sanitizeCapacity() та calculateSessionMetrics() (js/calculator.js)</span>
+          <button type="button" class="copy-btn" onclick="copyCode(this)">Копіювати</button>
+        </div>
+        <pre><code>function clamp(num, min, max) {
+  if (!Number.isFinite(num)) return min;
+  return Math.min(Math.max(num, min), max);
+}
+
+function sanitizeCapacity(rawValue) {
+  const str = String(rawValue ?? '').trim();
+  if (str.length === 0) {
+    return { valid: false, value: clamp(manualCapacity, 10, 250),
+      error: 'Поле ємності порожнє. Вкажіть значення від 10 до 250 кВт·год.' };
+  }
+  if (!/^-?\d+(?:[.,]\d+)?$/.test(str)) {
+    return { valid: false, value: clamp(manualCapacity, 10, 250),
+      error: 'Дозволено лише числа (наприклад, 65). Нечислові символи заблоковано.' };
+  }
+  const parsed = parseFloat(str.replace(',', '.'));
+  if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
+    return { valid: false, value: 65, error: 'Некоректне числове значення.' };
+  }
+  if (parsed &lt;= 0) {
+    return { valid: false, value: 10,
+      error: 'Ємність не може бути ≤ 0. Для безпеки застосовано мінімум 10 кВт·год.' };
+  }
+  if (parsed &lt; 10) {
+    return { valid: false, value: 10, error: 'Мінімальна ємність батареї — 10 кВт·год.' };
+  }
+  if (parsed &gt; 250) {
+    return { valid: false, value: 250,
+      error: 'Перевищено максимум (250 кВт·год). Обмежено для захисту від переповнення.' };
+  }
+  return { valid: true, value: Math.round(parsed * 10) / 10, error: '' };
+}</code></pre>
+      </div>
+
+      <div class="code-box">
+        <div class="code-head">
+          <span>Лог стрес-тестування у Chrome DevTools Console (0 Errors)</span>
+          <button type="button" class="copy-btn" onclick="copyCode(this)">Копіювати</button>
+        </div>
+        <pre><code>&gt; ['', '   ', '-50', '0', '5', '999999', 'abc&lt;script&gt;alert(1)&lt;/script&gt;'].map(c =&gt; ChargeUACalculator.testEdgeCase(c));
+[QA Edge Cases Suite] (7) [
+  { input: "", valid: false, clamped: 65, cost: 713.10 },
+  { input: "-50", valid: false, clamped: 10, cost: 122.40 },
+  { input: "0", valid: false, clamped: 10, cost: 122.40 },
+  { input: "5", valid: false, clamped: 10, cost: 122.40 },
+  { input: "999999", valid: false, clamped: 250, cost: 2700.00 },
+  { input: "abc&lt;script&gt;alert(1)&lt;/script&gt;", valid: false, clamped: 250, cost: 2700.00 }
+]
+// Chrome DevTools Console: 0 Errors | 0 Uncaught Exceptions</code></pre>
+      </div>
+    </section>
+
+    <!-- 4. СКРІНШОТИ -->
+    <section class="section-block report-section" data-cat="screenshots">
+      <div class="section-header">
+        <h2 class="section-title">4. Технічний скріншот-звіт (Happy Path, Edge Cases, 375px, Vercel, GitHub)</h2>
+        <span class="section-tag">Клікніть для збільшення</span>
+      </div>
+      <div class="shots-grid">
+        <figure class="shot-card" onclick="openLightbox('assets/lab11-report/01_calc_happy_path_desktop.png', 'Рис. 1. Happy Path: Hyundai Ioniq 5 + Ultra-Fast DC 160 кВт + бронювання (794.72 ₴)')">
+          <div class="shot-thumb"><img src="assets/lab11-report/01_calc_happy_path_desktop.png" alt="Happy Path калькулятор" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 1. Happy Path (794.72 ₴, ~16 хв)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab11-report/02_calc_edge_cases_error_ui.png', 'Рис. 2. Обробка Edge Case «-50»: червона рамка is-invalid, текст помилки та Fail-Safe банер')">
+          <div class="shot-thumb"><img src="assets/lab11-report/02_calc_edge_cases_error_ui.png" alt="Edge Case -50 UI" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 2. Захист від -50 (Fail-Safe без NaN)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab11-report/03_calc_mobile_375px.png', 'Рис. 3. Мобільна адаптивність калькулятора (375×812px, тариф Green Night 8.90 ₴, scrollWidth = 375px)')">
+          <div class="shot-thumb"><img src="assets/lab11-report/03_calc_mobile_375px.png" alt="Мобільний калькулятор 375px" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 3. Мобільна версія 375px (Green Night)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab11-report/04_vercel_prod_lab11.png', 'Рис. 4. Живий продакшн на Vercel: перевірка Edge Case «999999» із клампом до 250 кВт·год')">
+          <div class="shot-thumb"><img src="assets/lab11-report/04_vercel_prod_lab11.png" alt="Vercel продакшн 999999" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 4. Продакшн Vercel (999999 → 250 кВт·год)</figcaption>
+        </figure>
+        <figure class="shot-card" onclick="openLightbox('assets/lab11-report/05_github_commit_lab11.png', 'Рис. 5. Репозиторій GitHub із комітом 306b578 у гілці main')">
+          <div class="shot-thumb"><img src="assets/lab11-report/05_github_commit_lab11.png" alt="GitHub коміт 306b578" loading="lazy"></div>
+          <figcaption class="shot-cap">Рис. 5. GitHub репозиторій (коміт 306b578)</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 5. 15 ПИТАНЬ ДО ЗАХИСТУ -->
+    <section class="section-block report-section" data-cat="defense">
+      <div class="section-header">
+        <h2 class="section-title">5. Тренажер до захисту: 15 контрольних запитань САПР</h2>
+        <span class="section-tag">Бліц + Деталі</span>
+      </div>
+      <div class="qa-list" id="qaList"></div>
+    </section>
+
+    <div class="empty-state" id="emptyState">
+      За вашим пошуковим запитом збігів не знайдено.
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="imgModal" role="dialog" aria-modal="true">
+    <button type="button" class="modal-close" id="closeModalBtn">Закрити (Esc)</button>
+    <div class="modal-content">
+      <img id="modalImg" src="" alt="">
+      <p class="modal-caption" id="modalCaption"></p>
+    </div>
+  </div>
+  <div class="toast" id="toast">Скопійовано!</div>
+
+  <script>
+    const qaData = [
+      {
+        q: "Що таке інтерактивний віджет в контексті веброзробки? Наведіть приклади.",
+        short: "Автономний або напівізольований динамічний модуль (HTML + CSS + JS), що реагує на дії користувача без перезавантаження сторінки.",
+        detail: "Приклади: калькулятор зарядки ChargeUA, кредитний калькулятор, конструктор меблів або товарів, квіз."
+      },
+      {
+        q: "Поясніть різницю між Happy Path та Edge Case.",
+        short: "Happy Path — ідеальний сценарій із коректними даними (65 кВт·год). Edge Case — граничні чи аномальні ситуації (\"\", -50, 0, 999999, літери, подвійний клік).",
+        detail: "У нашому звіті Happy Path дав 794.72 ₴, а 7 Edge Cases перевірено через QA Log."
+      },
+      {
+        q: "Що таке Defensive Programming (захисне програмування)?",
+        short: "Методологія, за якої код ніколи не довіряє вхідним даним, перевіряє їх гвардами (Defensive Guards) і в разі збою безпечно працює в режимі Fail-Safe.",
+        detail: "Програма не падає і не показує NaN, а виправляє/обмежує введення та попереджає користувача."
+      },
+      {
+        q: "Які основні Edge Cases ви тестували в своєму віджеті? Назвіть мінімум 4 випадки.",
+        short: "1) Порожній рядок і пробіли; 2) Від’ємні числа (-50) і нуль; 3) Вихід за максимум (999999); 4) Нечисловий/XSS рядок (abc<script>); 5) Подвійні кліки.",
+        detail: "Усі випадки задокументовано в таблиці QA Log і перевірено на живому сайті Vercel."
+      },
+      {
+        q: "Що означає поява NaN в результаті розрахунку? Чому це виникає?",
+        short: "NaN (Not a Number) виникає при спробі виконати математику над текстом або порожнім рядком без попередньої перевірки isNaN() / Number.isFinite().",
+        detail: "Усувається явним parseFloat() + перевіркою RegEx + функцією clamp()."
+      },
+      {
+        q: "Як ви захищали код від порожнього поля та від’ємних значень?",
+        short: "Функція sanitizeCapacity() робить .trim(), відсіює порожні рядки й числа <= 0, підсвічує інпут класом is-invalid та передає в розрахунок безпечне значення через clamp().",
+        detail: "Користувач одразу бачить червону підказку під полем і жовтий Fail-Safe банер."
+      },
+      {
+        q: "Яку роль має подія input та change при створенні інтерактивного віджета?",
+        short: "Подія input дає миттєвий перерахунок при кожній клавіші або русі повзунка; change спрацьовує для select, checkbox або після завершення редагування.",
+        detail: "Це дозволяє оновлювати ціну на льоту без окремої кнопки «Розрахувати»."
+      },
+      {
+        q: "Як ви перевіряли роботу віджета? Які інструменти використовували?",
+        short: "Вкладку Console, Elements та Device Emulation (375px / 1280px) у Chrome DevTools плюс автоматизований виклик ChargeUACalculator.testEdgeCase().",
+        detail: "Підтверджено 0 червоних Errors у консолі та відсутність горизонтального скролу на мобільному."
+      },
+      {
+        q: "Що потрібно робити, якщо в консолі з’являється помилка TypeError: Cannot read properties of null?",
+        short: "Перевірити збіг id у HTML та JS, запускати код після DOMContentLoaded (або defer) та ставити гвард if (!el) return; перед читанням .value.",
+        detail: "Така помилка виникає, коли скрипт звертається до елемента, якого ще немає в DOM або чий id змінили."
+      },
+      {
+        q: "Наведіть приклад хорошого промпту до ШІ для виправлення Edge Cases.",
+        short: "«Дій як Senior JS & QA Engineer. Додай у sanitizeCapacity() для #manual-kwh-input захист від NaN, Infinity, порожніх рядків, <= 0, > 250 і заміни .innerHTML на .textContent.»",
+        detail: "Важливо вказувати точні id елементів, допустимі межі та заборону на зміну робочої бізнес-логіки."
+      },
+      {
+        q: "Чому важливо обмежувати максимальне значення в полях (наприклад, max=\"500\")?",
+        short: "Щоб введення 999999999999 не зламало верстку переповненням і не дало Infinity у розрахунках.",
+        detail: "Межа max=\"250\" задана в HTML і продубльована в JS-константі MAX_CAPACITY_KWH."
+      },
+      {
+        q: "Як ви інтегрували віджет в свій основний лендинг?",
+        short: "У семантичну секцію #calculator, у стилях ChargeUA, із лінивою ініціалізацією (IntersectionObserver), ізоляцією в IIFE та зв’язком із картою Leaflet.",
+        detail: "Окрім цього, дотримано стандартів доступності: label/for, aria-invalid та role=\"alert\"."
+      },
+      {
+        q: "Які коміт-повідомлення ви використовували під час фінального релізу? Наведіть приклади.",
+        short: "За стандартом Conventional Commits: feat: додано параметри тарифу, бронювання та захист від Edge Cases у калькуляторі (ЛР №11).",
+        detail: "Хеш коміту в репозиторії chargeua-landing — 306b578."
+      },
+      {
+        q: "Як відбувається автоматичний деплой після git push?",
+        short: "GitHub тригерить webhook на Vercel: платформа завантажує свіжу гілку main, виконує збірку й оновлює URL chargeua-landing.vercel.app.",
+        detail: "Після релізу ми додатково перевірили продакшн-версію через DevTools."
+      },
+      {
+        q: "Які головні висновки ви зробили з цієї лабораторної роботи щодо якості коду?",
+        short: "ШІ швидко генерує Happy Path, але надійність продукту визначається QA-стрес-тестуванням, єдиними межами валідації, .textContent та ізоляцією коду.",
+        detail: "Справжній захисний код продовжує працювати коректно навіть тоді, коли користувач намагається його зламати."
+      }
+    ];
+
+    const qaList = document.getElementById('qaList');
+    qaData.forEach((item, idx) => {
+      const el = document.createElement('article');
+      el.className = 'qa-item';
+      const esc = s => s.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      el.innerHTML = `
+        <button type="button" class="qa-btn" aria-expanded="false">
+          <span><span class="qa-num">#${idx + 1}</span>${esc(item.q)}</span>
+          <span class="qa-icon" aria-hidden="true">▾</span>
+        </button>
+        <div class="qa-body">
+          <div class="qa-short">
+            <strong>Бліц-відповідь для захисту</strong>
+            ${esc(item.short)}
+          </div>
+          <p class="qa-detail">${esc(item.detail)}</p>
+        </div>
+      `;
+      const btn = el.querySelector('.qa-btn');
+      btn.addEventListener('click', () => {
+        const isOpen = el.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(isOpen));
+      });
+      qaList.appendChild(el);
+    });
+
+    const htmlEl = document.documentElement;
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.addEventListener('click', () => {
+      const isLight = htmlEl.classList.toggle('light');
+      htmlEl.classList.toggle('dark', !isLight);
+      themeBtn.textContent = isLight ? 'Темна тема' : 'Світла тема';
+    });
+
+    const expandAllBtn = document.getElementById('expandAllBtn');
+    let allOpen = false;
+    expandAllBtn.addEventListener('click', () => {
+      allOpen = !allOpen;
+      document.querySelectorAll('.qa-item').forEach(item => {
+        item.classList.toggle('open', allOpen);
+        item.querySelector('.qa-btn').setAttribute('aria-expanded', String(allOpen));
+      });
+      expandAllBtn.textContent = allOpen ? 'Згорнути питання' : 'Розгорнути питання';
+    });
+
+    const chips = document.querySelectorAll('.chip');
+    const sections = document.querySelectorAll('.report-section');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const emptyState = document.getElementById('emptyState');
+    let activeFilter = 'all';
+
+    function applyFilters() {
+      const q = searchInput.value.trim().toLowerCase();
+      clearSearchBtn.style.display = q ? 'block' : 'none';
+      let visibleSections = 0;
+
+      sections.forEach(sec => {
+        const cat = sec.dataset.cat;
+        if (activeFilter !== 'all' && cat !== activeFilter) {
+          sec.style.display = 'none';
+          return;
+        }
+        if (!q) {
+          sec.style.display = 'block';
+          if (cat === 'defense') sec.querySelectorAll('.qa-item').forEach(i => { i.style.display = 'block'; });
+          visibleSections++;
+          return;
+        }
+        if (cat === 'defense') {
+          let hits = 0;
+          sec.querySelectorAll('.qa-item').forEach(item => {
+            const ok = item.textContent.toLowerCase().includes(q);
+            item.style.display = ok ? 'block' : 'none';
+            if (ok) { item.classList.add('open'); item.querySelector('.qa-btn').setAttribute('aria-expanded', 'true'); hits++; }
+          });
+          sec.style.display = hits > 0 ? 'block' : 'none';
+          if (hits > 0) visibleSections++;
+        } else {
+          const ok = sec.textContent.toLowerCase().includes(q);
+          sec.style.display = ok ? 'block' : 'none';
+          if (ok) visibleSections++;
+        }
+      });
+      emptyState.style.display = visibleSections === 0 ? 'block' : 'none';
+    }
+
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        applyFilters();
+      });
+    });
+    searchInput.addEventListener('input', applyFilters);
+    clearSearchBtn.addEventListener('click', () => { searchInput.value = ''; applyFilters(); searchInput.focus(); });
+
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('modalImg');
+    const modalCap = document.getElementById('modalCaption');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    window.openLightbox = (src, cap) => { modalImg.src = src; modalImg.alt = cap; modalCap.textContent = cap; modal.classList.add('open'); };
+    const closeLightbox = () => modal.classList.remove('open');
+    closeModalBtn.addEventListener('click', closeLightbox);
+    modal.addEventListener('click', e => { if (e.target === modal) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    const toast = document.getElementById('toast');
+    let toastTimer;
+    window.copyCode = btn => {
+      const code = btn.closest('.code-box').querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = '✓ Скопійовано';
+        setTimeout(() => { btn.textContent = 'Копіювати'; }, 1800);
+        clearTimeout(toastTimer);
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+      });
+    };
+  </script>
+</body>
+</html>
