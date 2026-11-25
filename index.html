@@ -942,6 +942,131 @@
       border-color: #005EC9;
       color: #FFFFFF !important;
     }
+
+    /* =========================================================================
+       ЛР №11: ДОДАТКОВІ ПАРАМЕТРИ КАЛЬКУЛЯТОРА ТА ЗАХИСТ ВІД EDGE CASES
+       ========================================================================= */
+    .calc-options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (min-width: 768px) {
+      .calc-options-grid {
+        grid-template-columns: 1.15fr 1fr;
+        align-items: start;
+      }
+    }
+    .calc-option-box {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .calc-option-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: 6px;
+    }
+    .calc-select {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0F172A;
+      background: #FFFFFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .calc-select:focus {
+      border-color: #005EC9;
+      box-shadow: 0 0 0 3px rgba(0, 94, 201, 0.14);
+      outline: none;
+    }
+    .calc-checks-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .calc-check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 8px 12px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #1E293B;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+      user-select: none;
+    }
+    .calc-check-item:hover {
+      border-color: #93C5FD;
+      background: #F0F7FF;
+    }
+    .calc-check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #005EC9;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .manual-hint {
+      font-size: 11px;
+      color: #475569;
+      margin-top: 4px;
+    }
+    .manual-input.is-invalid {
+      border-color: #DC2626 !important;
+      background-color: #FEF2F2 !important;
+      color: #991B1B !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+    }
+    .manual-input.is-valid {
+      border-color: #10B981 !important;
+    }
+    .calc-error-msg {
+      display: none;
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #B91C1C;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .calc-error-msg.visible {
+      display: block;
+    }
+    .calc-warning-banner {
+      display: none;
+      margin: 10px 0 12px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      color: #92400E;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .calc-warning-banner.visible {
+      display: block;
+    }
   </style>
 
 </head>
@@ -1180,9 +1305,11 @@
                   <div class="manual-field">
                     <label for="manual-kwh-input"><i class="fa-solid fa-battery-three-quarters" aria-hidden="true"></i> Введіть ємність батареї вручну:</label>
                     <div class="manual-num-wrap">
-                      <input type="number" id="manual-kwh-input" min="10" max="250" step="1" value="65" class="manual-input">
+                      <input type="number" id="manual-kwh-input" min="10" max="250" step="1" value="65" class="manual-input" aria-describedby="manual-kwh-hint manual-kwh-error" aria-invalid="false">
                       <span class="manual-unit">кВт·год</span>
                     </div>
+                    <p id="manual-kwh-hint" class="manual-hint">Допустимий діапазон: 10–250 кВт·год</p>
+                    <p id="manual-kwh-error" class="calc-error-msg" role="alert" aria-live="polite"></p>
                   </div>
                   <div class="manual-field">
                     <label id="manual-ports-label"><i class="fa-solid fa-plug-circle-bolt" aria-hidden="true"></i> Порт швидкісної зарядки авто:</label>
@@ -1212,6 +1339,7 @@
                 </div>
                 <div class="slider-rail" id="slider-rail">
                   <div class="slider-fill" id="slider-fill" style="left: 20%; width: 60%;"></div>
+                  <label for="calc-range-slider" class="visually-hidden">Бажаний рівень заряду батареї (%)</label>
                   <input type="range" min="20" max="100" step="5" value="80" id="calc-range-slider" class="slider-native-input" aria-label="Бажаний рівень заряду батареї">
                   <div class="slider-badge" id="slider-badge" style="left: 80%;">80% (Цільовий)</div>
                 </div>
@@ -1221,6 +1349,30 @@
                   <span>50%</span>
                   <span class="tick-active">80%<span class="tick-desc"> (Рекомендовано DC)</span></span>
                   <span>100%<span class="tick-desc"> (Повна)</span></span>
+                </div>
+              </div>
+
+              <!-- ДОДАТКОВІ ПАРАМЕТРИ ТАРИФУ І СЕРВІСУ (ЛР №11) -->
+              <div class="calc-options-grid">
+                <div class="calc-option-box">
+                  <label for="calc-tariff-select" class="calc-option-label">
+                    <i class="fa-solid fa-bolt text-blue-600" aria-hidden="true"></i> Тарифний план і потужність хабу:
+                  </label>
+                  <select id="calc-tariff-select" class="calc-select">
+                    <option value="standard" selected>Стандарт DC (120 кВт) — 14.12 ₴</option>
+                    <option value="ultrafast">Ultra-Fast DC (160 кВт) — 17.90 ₴</option>
+                    <option value="ac">Міський AC (22 кВт) — 10.50 ₴</option>
+                  </select>
+                </div>
+                <div class="calc-checks-col">
+                  <label class="calc-check-item" for="calc-night-opt">
+                    <input type="checkbox" id="calc-night-opt">
+                    <span>Нічний тариф «Green Night» (8.90 ₴/кВт·год)</span>
+                  </label>
+                  <label class="calc-check-item" for="calc-reserve-opt">
+                    <input type="checkbox" id="calc-reserve-opt">
+                    <span>Пріоритетне бронювання порту на 15 хв (+15 ₴)</span>
+                  </label>
                 </div>
               </div>
             </div>
@@ -1233,6 +1385,7 @@
               <div class="res-efficiency" id="res-efficiency">
                 ● Час на DC 120 кВт: <strong id="res-time">~28 хвилин</strong> | Економія vs бензин: <strong id="res-savings">~1 420 ₴</strong>
               </div>
+              <div id="calc-warning-banner" class="calc-warning-banner" role="status" aria-live="polite"></div>
               <button type="button" class="btn btn-primary" id="btn-calc-find" style="width:100%;">
                 <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Знайти найближчу вільну станцію
               </button>
@@ -1300,7 +1453,8 @@
             <!-- Пошук -->
             <div class="relative flex-1">
               <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600 text-sm" aria-hidden="true"></i>
-              <input type="text" id="station-search-input" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-600" placeholder="Пошук за містом, адресою або назвою ТРЦ...">
+              <label for="station-search-input" class="visually-hidden">Пошук зарядної станції</label>
+<input type="text" id="station-search-input" aria-label="Пошук зарядної станції за містом, адресою або назвою ТРЦ" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-600" placeholder="Пошук за містом, адресою або назвою ТРЦ...">
             </div>
 
             <!-- Перемикач тільки вільні -->
